@@ -294,4 +294,24 @@ v `G:\Moy disk\AHexaTrader_BACKUP\spartak\`.
     cmake --build build --config Debug
     cd build
     ctest -C Debug --output-on-failure
-    cd ..
+    cd ..---
+## **[008] Sinhronizaciya: kommit + push**
+**Kogda:** 2026-10-02
+**Sloy:** docs
+**Status:** PASS
+**Predydushchiy:** [007]
+**Sleduyushchiy:** [007] - nachat' kod RangeDetector
+### Zachem
+Zafiksirovat' v istorii izmeneniya, nakoplennie mezhdu [006] i startom [007]:
+razdel 12 (istochnik dannyh), zhirnye hvostovye bloki zhurnala.
+### Chto sdelano
+- ARCHITECTURE.md: dobavlen razdel 12 "Istochnik dannyh" (variant B).
+- JOURNAL.md: blok "Kak prodolzhit rabotu" i "Bystryy start" pereneseny v konec,
+  zagolovki sdelany zhirnymi.
+- Kommit 8d507cc, push v main.
+### Rezultat
+git push: ea083ad..8d507cc, uspeshno.
+Zerkalo sinhronizirovano.
+### Svyazi
+- depends: [006], [007]
+- blocks: [007] - kod RangeDetector
