@@ -22,6 +22,21 @@ Novyy fayl bez zapisi v reestre -> CI krasnyy.
 ### 2.3. Vetki
 - `main` -- stabilnaya.
 - Push v `main` tolko cherez PR.
+
+### 2.4. Reestr bez zagluzhek
+Esli v tablitse reestra est' stroki - fraza "Poka pusto" udalyaetsya.
+Zagluzhka i zapisi ne sosushchestvuyut.
+### 2.5. Distsiplina statusov
+Dopustimo tolko pyat' znacheniy:
+- `plan`     - zaplanirovano, rabota ne nachata
+- `WIP`      - idet pryamo seychas
+- `PASS`     - testy proshli, zafiksirovano
+- `FAIL`     - testy upali, otkat obyazatelen
+- `ROLLBACK` - otkatili, shag zakryt
+Drugih znacheniy net.
+### 2.6. Bystryy start vsegda aktualen
+Komandy sborki i testov zhivut v odnom meste - sec."Bystryy start".
+Menyaesh' komandy - obnovlyaesh' blok v tom zhe commite.
 ---
 ## 3. Planiruemaya struktura
     include/core/        tipy, konstanty, konfig
@@ -33,7 +48,7 @@ Novyy fayl bez zapisi v reestre -> CI krasnyy.
     tools/               konvertery, CLI-utility
 ---
 ## 4. Reestr faylov
-Poka pusto. Zapolnyaetsya po mere sozdaniya faylov.
+Reestr zapolnyaetsya po mere zakrytiya shagov (PASS).
 | Put | Rol | Status |
 |---|---|---|
 | `include/core/Types.h`         | Bazovye tipy (Bar, KitSignal)     | gotov |
@@ -162,4 +177,12 @@ ClusterDelta otsutstvuyut. Zhdem istochnik.
 | 8 | LargePlayerDetector | Krupnyy igrok, parnye tsifry (sec.4) |
 | 9 | ShadowDetector      | Ten' (sec.6.7)                     |
 ### Zavisimost'
-- CompositeSignal (sec.7): minimum 2-3 detektora iz gruppy 1-4 dolzhny rabotat'.
+- CompositeSignal (sec.7): minimum 2-3 detektora iz gruppy 1-4 dolzhny rabotat'.---
+## Bystryy start
+    cmake -S . -B build
+    cmake --build build --config Debug
+    cd build
+    ctest -C Debug --output-on-failure
+    cd ..
+Dobavil novyy fayl v include/ src/ tests/ - vnesi ego v sec.4 Reestr faylov.
+Dobavil detektor - vnesi v sec.11 Roadmap.

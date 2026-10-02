@@ -248,4 +248,39 @@ DataSanitizer.run() na 5-bar sample.csv: ok=false, bars_scanned=5
 
 ### Svyazi
 - depends: [005]
-- blocks: [007] - detektory
+- blocks: [007] - detektory---
+## [007] RangeDetector - bokovik (>= 4 kasaniya)
+**Kogda:** 2026-10-02
+**Sloy:** cluster
+**Status:** plan
+**Predydushchiy:** [006]
+**Sleduyushchiy:** [008] - VLevelDetector
+### Zachem
+Pervyy detektor iz roadmap (ARCHITECTURE.md sec.11). Rabotaet na tekushchih
+bar-level dannyh, ne trebuet footprint. Sluzhit etalonom struktury
+dlya vseh posleduyushchih detektorov.
+### Pravilo (iz docs/forex_kit_rules.md sec.6.1)
+- Ne menee 4 kasaniya verhney ili nizhney granitsy.
+- Tsena v ramkah.
+- Potentsial dvizheniya = shirina bokovika * 2.
+- Kogo bolshe (ASK/BID) - tuda i tsenka posle proboya.
+### Chto sdelat
+- include/cluster/RangeDetector.h
+- src/cluster/RangeDetector.cpp
+- tests/test_range_detector.cpp
+- CMakeLists.txt: podklyuchit' novye fayly
+### Interfeys (chernovik)
+- Vhod: vector<Bar> ili BarStream + okno.
+- Vyhod: struct RangeSignal { bool ok; int64_t start_ts; int64_t end_ts;
+  double high; double low; double width; int touches_top; int touches_bottom; }.
+### Otkrytye voprosy
+1. Okno poiska: skolko barov nazad smotrim (predvaritelno 50-100).
+2. Porog "kasaniya": skolko punktov schitat' prikosnoveniem.
+3. Kak schitat' "kogo bolshe" - po summe ASK vs BID vnutri diapazona.
+### Pravila soblyudeny
+- 2.4 Reestr bez zagluzhek - da.
+- 2.5 Status iz pyati - plan.
+- 2.6 Bystryy start - bez izmeneniy.
+### Svyazi
+- depends: [006]
+- blocks: [008], [009], [010]
