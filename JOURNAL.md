@@ -276,29 +276,7 @@ dlya vseh posleduyushchih detektorov.
 - blocks: [008], [009], [010]
 
 ---
-## **Kak prodolzhit rabotu**
-1. Prochitay etot fayl do kontsa (poslednie 3-5 zapisey - obyazatelno).
-2. Otkroy `ARCHITECTURE.md` - tam proverennoe (proshedshee test) sostoyanie proekta.
-3. Posmotri posledniy kommit: `git log -1`.
-4. Naydi poslednyuyu zapis so statusom v rabote - eto tekushchaya zadacha.
-5. Prodolzhay s nee ili nachni novuyu, dobaviv zapis v konets fayla.
-**Pravilo fiksatsii:**
-### Odna zapis = odno sobytie
-Kazhdoe sobytie - otdelnaya zapis. Esli sobytie proizvodnoe ot predydushchego
-(sozdanie -> utverzhdenie), ono idet otdelnoy zapisyu snizu. Redaktirovanie
-proshlyh zapisey zadnim chislom zapreshcheno. Oshibki fiksiruyutsya v novoy
-zapisi s yavnym ukazaniem, chto i gde bylo narusheno.- V `JOURNAL.md` pishem **vsegda** - uspeh, proval, otkat, pauza.
-- V `ARCHITECTURE.md` pishem **tolko kogda test proshel (PASS)**.
-**Zerkalo:** posle pusha skopiruy `JOURNAL.md` i `ARCHITECTURE.md`
-v `G:\Moy disk\AHexaTrader_BACKUP\spartak\`.
 
----
-## **Bystryy start**
-    cmake -S . -B build
-    cmake --build build --config Debug
-    cd build
-    ctest -C Debug --output-on-failure
-    cd ..---
 ## **[008] Sinhronizaciya: kommit + push**
 **Kogda:** 2026-10-02
 **Sloy:** docs
@@ -318,7 +296,8 @@ git push: ea083ad..8d507cc, uspeshno.
 Zerkalo sinhronizirovano.
 ### Svyazi
 - depends: [006], [007]
-- blocks: [007] - kod RangeDetector---
+- blocks: [007] - kod RangeDetector
+
 ## **[009] Sozdanie glossariya i pervoy gruppy terminov**
 **Kogda:** 2026-10-02
 **Sloy:** docs
@@ -390,3 +369,30 @@ Novoe pravilo "Odna zapis = odno sobytie" zafiksirovano v shapke.
 ### Svyazi
 - depends: [009]
 - blocks: [011]
+
+---
+
+## **Kak prodolzhit rabotu**
+1. Prochitay etot fayl do kontsa (poslednie 3-5 zapisey - obyazatelno).
+2. Otkroy `ARCHITECTURE.md` - tam proverennoe (proshedshee test) sostoyanie proekta.
+3. Posmotri posledniy kommit: `git log -1`.
+4. Naydi poslednyuyu zapis so statusom v rabote - eto tekushchaya zadacha.
+5. Prodolzhay s nee ili nachni novuyu, dobaviv zapis v konets fayla.
+**Pravilo fiksatsii:**
+### Odna zapis = odno sobytie
+Kazhdoe sobytie - otdelnaya zapis. Esli sobytie proizvodnoe ot predydushchego
+(sozdanie -> utverzhdenie), ono idet otdelnoy zapisyu snizu. Redaktirovanie
+proshlyh zapisey zadnim chislom zapreshcheno. Oshibki fiksiruyutsya v novoy
+zapisi s yavnym ukazaniem, chto i gde bylo narusheno.
+- V `JOURNAL.md` pishem **vsegda** - uspeh, proval, otkat, pauza.
+- V `ARCHITECTURE.md` pishem **tolko kogda test proshel (PASS)**.
+**Zerkalo:** posle pusha skopiruy `JOURNAL.md` i `ARCHITECTURE.md`
+v `G:\Moy disk\AHexaTrader_BACKUP\spartak\`.
+
+---
+## **Bystryy start**
+    cmake -S . -B build
+    cmake --build build --config Debug
+    cd build
+    ctest -C Debug --output-on-failure
+    cd ..
