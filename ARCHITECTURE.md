@@ -199,4 +199,22 @@ Ispolzuetsya tolko dlya DELTA / ASK / BID. Ne zamenyaet .bin i ne
 schitaetsya bazovym.
 **Pravilo 12.4. Setevye istochniki zapreshcheny.**
 V backteste zapreshcheny HTTP / API / lyubye online-istochniki.
-Dannye dolzhny byt na diske do starta progonki.
+Dannye dolzhny byt na diske do starta progonki.---
+## 13. Terminologiya (Glossary)
+Vse terminy torgovoy sistemy opisany v docs/glossary/.
+Shablon, statusy i pravila vedeniya - v docs/glossary/README.md.
+### Reestr faylov glossariya
+| Fayl | Soderzhanie | Status |
+|---|---|---|
+| `README.md` | Shablon, statusy, pravila vedeniya | utverzhdeno |
+| `01-fasy-rynka.md` | Nakoplenie, trend, raspredelenie | utverzhdeno |
+| `02-struktura.md` | IT, ZO, ORT, RM, zakreplenie | plan |
+| `03-signaly.md` | Divergenciya, lozhnyy proboy, lovushka | plan |
+| `04-urovni.md` | LU, PU, podderzhka, soprotivlenie | plan |
+| `05-obyom.md` | Dobor, uderzhanie, pereliv | plan |
+| `06-formatcii.md` | Bokovik, V-uroven, zerkalnyy, plita | plan |
+| `07-futprint.md` | Terminy zhduchie footprint-dannyh | plan |
+### Statusy terminov
+- `chernovik` - zapisan, ne proveren polzovatelem
+- `utverzhdeno` - proveren i utverzhden
+Termin iz gruppy ne perehodit v `utverzhdeno`, poka polzovatel ne podtverdil.
