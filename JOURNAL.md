@@ -2,18 +2,6 @@
 > Hronologiya vseh shagov proekta. Novye zapisi dobavlyayutsya **snizu**.
 > Nichego ne udalyaetsya i ne redaktiruetsya zadnim chislom.
 ---
-## Kak prodolzhit rabotu
-1. Prochitay etot fayl do kontsa (poslednie 3-5 zapisey - obyazatelno).
-2. Otkroy `ARCHITECTURE.md` - tam proverennoe (proshedshee test) sostoyanie proekta.
-3. Posmotri posledniy kommit: `git log -1`.
-4. Naydi poslednyuyu zapis so statusom v rabote - eto tekushchaya zadacha.
-5. Prodolzhay s nee ili nachni novuyu, dobaviv zapis v konets fayla.
-**Pravilo fiksatsii:**
-- V `JOURNAL.md` pishem **vsegda** - uspeh, proval, otkat, pauza.
-- V `ARCHITECTURE.md` pishem **tolko kogda test proshel (PASS)**.
-**Zerkalo:** posle pusha skopiruy `JOURNAL.md` i `ARCHITECTURE.md`
-v `G:\Moy disk\AHexaTrader_BACKUP\spartak\`.
----
 ## [001] 2026-10-02 - Uchrezhdenie protokola raboty
 **Status:** uspeh
 **Avtor:** igorsegal + assistant
@@ -215,7 +203,7 @@ PASS. ClusterCsvReader korrektno parsit realnyy fayl ClusterDelta. Sleduyushchiy
 **Sloy:** data
 **Status:** [PASS] PASS
 **Predydushchiy:** [005]
-**Sleduyushchiy:** [007] - TBD
+**Sleduyushchiy:** [007] - RangeDetector
 
 ### Zachem
 ClusterCsvReader uzhe parsit CSV (shag 005, PASS), no BarStream ne umeet chitat
@@ -248,8 +236,10 @@ DataSanitizer.run() na 5-bar sample.csv: ok=false, bars_scanned=5
 
 ### Svyazi
 - depends: [005]
-- blocks: [007] - detektory---
-## [007] RangeDetector - bokovik (>= 4 kasaniya)
+- blocks: [007] - detektory
+---
+
+## **[007] RangeDetector - bokovik (>= 4 kasaniya)**
 **Kogda:** 2026-10-02
 **Sloy:** cluster
 **Status:** plan
@@ -284,3 +274,24 @@ dlya vseh posleduyushchih detektorov.
 ### Svyazi
 - depends: [006]
 - blocks: [008], [009], [010]
+
+---
+## **Kak prodolzhit rabotu**
+1. Prochitay etot fayl do kontsa (poslednie 3-5 zapisey - obyazatelno).
+2. Otkroy `ARCHITECTURE.md` - tam proverennoe (proshedshee test) sostoyanie proekta.
+3. Posmotri posledniy kommit: `git log -1`.
+4. Naydi poslednyuyu zapis so statusom v rabote - eto tekushchaya zadacha.
+5. Prodolzhay s nee ili nachni novuyu, dobaviv zapis v konets fayla.
+**Pravilo fiksatsii:**
+- V `JOURNAL.md` pishem **vsegda** - uspeh, proval, otkat, pauza.
+- V `ARCHITECTURE.md` pishem **tolko kogda test proshel (PASS)**.
+**Zerkalo:** posle pusha skopiruy `JOURNAL.md` i `ARCHITECTURE.md`
+v `G:\Moy disk\AHexaTrader_BACKUP\spartak\`.
+
+---
+## **Bystryy start**
+    cmake -S . -B build
+    cmake --build build --config Debug
+    cd build
+    ctest -C Debug --output-on-failure
+    cd ..

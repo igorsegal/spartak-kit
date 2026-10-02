@@ -185,4 +185,18 @@ ClusterDelta otsutstvuyut. Zhdem istochnik.
     ctest -C Debug --output-on-failure
     cd ..
 Dobavil novyy fayl v include/ src/ tests/ - vnesi ego v sec.4 Reestr faylov.
-Dobavil detektor - vnesi v sec.11 Roadmap.
+Dobavil detektor - vnesi v sec.11 Roadmap.---
+## 12. Istochnik dannyh
+**Pravilo 12.1. Bazovyy istochnik - .bin XFBAR.**
+Lokalnye binarnye fayly v korne:
+    D:\AHexaTrader\1DataFiles\raw\<SYMBOL>\<SYMBOL>_<TF>.bin
+Naprimer: D:\AHexaTrader\1DataFiles\raw\EURUSD\EURUSD_M5.bin
+**Pravilo 12.2. Format .bin.**
+Struktura zagolovka i svechi - v docs/format_bin.md.
+Izmenenie struktury = novaya versiya v pole magic. Bez novoy versii - ne menyat.
+**Pravilo 12.3. Dopolnitelnyy istochnik - ClusterDelta CSV.**
+Ispolzuetsya tolko dlya DELTA / ASK / BID. Ne zamenyaet .bin i ne
+schitaetsya bazovym.
+**Pravilo 12.4. Setevye istochniki zapreshcheny.**
+V backteste zapreshcheny HTTP / API / lyubye online-istochniki.
+Dannye dolzhny byt na diske do starta progonki.
