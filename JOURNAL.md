@@ -378,6 +378,8 @@ Novoe pravilo "Odna zapis = odno sobytie" zafiksirovano v shapke.
 3. Posmotri posledniy kommit: `git log -1`.
 4. Naydi poslednyuyu zapis so statusom v rabote - eto tekushchaya zadacha.
 5. Prodolzhay s nee ili nachni novuyu, dobaviv zapis v konets fayla.
+
+**Obnovleno:** 2026-10-02 17:46 (commit 08b111d)
 **Pravilo fiksatsii:**
 ### Odna zapis = odno sobytie
 Kazhdoe sobytie - otdelnaya zapis. Esli sobytie proizvodnoe ot predydushchego
@@ -396,3 +398,5 @@ v `G:\Moy disk\AHexaTrader_BACKUP\spartak\`.
     cd build
     ctest -C Debug --output-on-failure
     cd ..
+
+**Obnovleno:** 2026-10-02 17:46 (commit 08b111d)
