@@ -17,6 +17,7 @@ add_library(spartak_kit_core STATIC
     src/data/DataSanitizer.cpp
     src/data/ClusterCsvReader.cpp
     src/cluster/RangeDetector.cpp
+    src/cluster/VLevelDetector.cpp
 )
 target_include_directories(spartak_kit_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_compile_features(spartak_kit_core PUBLIC cxx_std_20)
@@ -44,3 +45,7 @@ add_test(NAME test_barstream_file COMMAND test_barstream_file "${CMAKE_CURRENT_S
 add_executable(test_range_detector tests/test_range_detector.cpp)
 target_link_libraries(test_range_detector PRIVATE spartak_kit_core)
 add_test(NAME test_range_detector COMMAND test_range_detector)
+
+add_executable(test_vlevel_detector tests/test_vlevel_detector.cpp)
+target_link_libraries(test_vlevel_detector PRIVATE spartak_kit_core)
+add_test(NAME test_vlevel_detector COMMAND test_vlevel_detector)
