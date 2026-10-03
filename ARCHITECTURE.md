@@ -1,220 +1,245 @@
-# SPARTAK KIT :: ARCHITECTURE
-Master-dokument proekta. Obnovlyaetsya pri kazhdom izmenenii struktury.
-Sozdan: 2026-10-02.
+# SPARTAK KIT :: АРХИТЕКТУРА
+Мастер-документ проекта. Обновляется при каждом изменении структуры.
+Создан: 2026-10-02.
 ---
-## 1. Pasport
-- **Nazvanie:** SPARTAK KIT
-- **Naznachenie:** C++20 bektester torgovoy sistemy FOREX KIT.
-- **Istochnik sistemy:** kurs FOREX KIT (28 video), docs/forex_kit_rules.md.
-- **Istochnik dannyh:** ClusterDelta CSV (https://my.clusterdelta.com/files).
-- **Stek:** C++20, CMake >= 3.20, MSVC 2022+.
-- **Namespace:** spartak::core, spartak::data, spartak::cluster, ...
-- **Repozitoriy:** github.com/igorsegal/spartak-kit
+## 1. Паспорт
+- **Название:** SPARTAK KIT
+- **Назначение:** C++20 бэктестер торговой системы FOREX KIT.
+- **Источник системы:** курс FOREX KIT (28 видео), docs/forex_kit_rules.md.
+- **Источник данных:** ClusterDelta CSV (https://my.clusterdelta.com/files).
+- **Стек:** C++20, CMake >= 3.20, MSVC 2022+.
+- **Пространство имён:** spartak::core, spartak::data, spartak::cluster, ...
+- **Репозиторий:** github.com/igorsegal/spartak-kit
 ---
-## 2. Pravila repozitoriya
-### 2.1. Reestr faylov
-Lyuboy novyy fayl v `include/`, `src/`, `tests/` DOLZhEN byt opisan v razdele 4.
-Novyy fayl bez zapisi v reestre -> CI krasnyy.
-### 2.2. Kommity
-- Odin kommit = odno logicheskoe izmenenie.
-- Soobshchenie kommita: `[sloy]: kratkoe opisanie`.
-- Primery: `data: add ClusterDelta CSV reader`, `cluster: add FootprintDetector`.
-### 2.3. Vetki
-- `main` -- stabilnaya.
-- Push v `main` tolko cherez PR.
-
-### 2.4. Reestr bez zagluzhek
-Esli v tablitse reestra est' stroki - fraza "Poka pusto" udalyaetsya.
-Zagluzhka i zapisi ne sosushchestvuyut.
-### 2.5. Distsiplina statusov
-Dopustimo tolko pyat' znacheniy:
-- `plan`     - zaplanirovano, rabota ne nachata
-- `WIP`      - idet pryamo seychas
-- `PASS`     - testy proshli, zafiksirovano
-- `FAIL`     - testy upali, otkat obyazatelen
-- `ROLLBACK` - otkatili, shag zakryt
-Drugih znacheniy net.
-### 2.6. Bystryy start vsegda aktualen
-Komandy sborki i testov zhivut v odnom meste - sec."Bystryy start".
-Menyaesh' komandy - obnovlyaesh' blok v tom zhe commite.
+## 2. Правила репозитория
+### 2.1. Реестр файлов
+Любой новый файл в `include/`, `src/`, `tests/` ДОЛЖЕН быть описан в разделе 4.
+Новый файл без записи в реестре — CI красный.
+### 2.2. Коммиты
+- Один коммит — одно логическое изменение.
+- Сообщение коммита: `[слой]: краткое описание`.
+- Примеры: `data: add ClusterDelta CSV reader`, `cluster: add FootprintDetector`.
+### 2.3. Ветки
+- `main` — стабильная.
+- Push в `main` только через PR.
+### 2.4. Реестр без заглушек
+Если в таблице реестра есть строки — фраза «Пока пусто» удаляется.
+Заглушка и записи не сосуществуют.
+### 2.5. Дисциплина статусов
+Допустимо только пять значений:
+- `plan`     — запланировано, работа не начата
+- `WIP`      — идёт прямо сейчас
+- `PASS`     — тесты прошли, зафиксировано
+- `FAIL`     — тесты упали, откат обязателен
+- `ROLLBACK` — откатили, шаг закрыт
+Других значений нет. Статусы — идентификаторы. В файлах и в коде они
+остаются на латинице. Описания — на кириллице.
+### 2.6. Быстрый старт всегда актуален
+Команды сборки и тестов живут в одном месте — раздел «Быстрый старт».
+Меняешь команды — обновляешь блок в том же коммите.
+### 2.7. Журнал синхронизируется постоянно
+Всё, что попало в `JOURNAL.md`, немедленно копируется в зеркало.
+Зеркало: `G:\Мой диск\AHexaTrader_BACKUP\spartak\`.
+### 2.8. Push — только при изменении архитектуры
+Промежуточные накопления журнала живут локально и в зеркале.
+На GitHub идут только изменения `ARCHITECTURE.md`.
+### 2.9. Одна запись — одно событие
+Каждое событие — отдельная запись в журнале.
+Если событие производное — оно идёт отдельной записью снизу.
+Редактирование прошлых записей задним числом запрещено.
 ---
-## 3. Planiruemaya struktura
-    include/core/        tipy, konstanty, konfig
-    include/data/        chtenie XFBAR i ClusterDelta CSV
-    include/cluster/     detektory signalov FOREX KIT
-    src/                 realizatsii
-    tests/               smoke-testy
-    docs/                pravila sistemy, ARCHITECTURE, ROADMAP
-    tools/               konvertery, CLI-utility
+## 3. Планируемая структура
+    include/core/        типы, константы, конфиг
+    include/data/        чтение XFBAR и ClusterDelta CSV
+    include/cluster/     детекторы сигналов FOREX KIT
+    src/                 реализации
+    tests/               smoke-тесты
+    docs/                правила системы, ARCHITECTURE, ROADMAP
+    tools/               конвертеры, CLI-утилиты
 ---
-## 4. Reestr faylov
-Reestr zapolnyaetsya po mere zakrytiya shagov (PASS).
-| Put | Rol | Status |
+## 4. Реестр файлов
+Реестр заполняется по мере закрытия шагов (PASS).
+| Путь | Роль | Статус |
 |---|---|---|
-| `include/core/Types.h`         | Bazovye tipy (Bar, KitSignal)     | gotov |
-| `include/data/BarStream.h`     | Potok barov (Synthetic/Vector)    | gotov |
-| `src/data/BarStream.cpp`       | Realizatsiya BarStream              | gotov |
-| `include/data/DataSanitizer.h` | Sanitayzer (potokovyy, BarStream) | gotov |
-| `src/data/DataSanitizer.cpp`   | Realizatsiya DataSanitizer          | gotov |
-Statusy: `gotov`, `v rabote`, `zaglushka`, `musor`.
+| `include/core/Types.h`         | Базовые типы (Bar, KitSignal)      | готов |
+| `include/data/BarStream.h`     | Поток баров (Synthetic/Vector)     | готов |
+| `src/data/BarStream.cpp`       | Реализация BarStream                | готов |
+| `include/data/DataSanitizer.h` | Санитайзер (потоковый, BarStream)  | готов |
+| `src/data/DataSanitizer.cpp`   | Реализация DataSanitizer            | готов |
+| `include/data/ClusterCsvReader.h` | Парсер CSV ClusterDelta          | готов |
+| `src/data/ClusterCsvReader.cpp`   | Реализация ClusterCsvReader      | готов |
+| `tests/smoke_test.cpp`         | Smoke-тесты DataSanitizer/BarStream | готов |
+| `tests/test_cluster_csv.cpp`   | Тест парсера CSV                    | готов |
+| `tests/test_barstream_file.cpp`| Тест BarStream(File) + DataSanitizer | готов |
+| `tests/csv_stats.cpp`          | Диагностика CSV (утилита)           | готов |
+Статусы: `готов`, `в работе`, `заглушка`, `мусор`.
 ---
-## 5. Potok dannyh
-Poka ne opredelen. Budet zapolnen posle sozdaniya sloya data/.
-Planiruemaya shema:
+## 5. Поток данных
+Пока не определён. Будет заполнен после создания слоя data/.
+Планируемая схема:
     ClusterDelta CSV
       -> data::ClusterCsvReader
-      -> data::BarStream (rasshirennyy: delta, ask, bid)
-      -> cluster::* (detektory FOREX KIT)
+      -> data::BarStream (расширенный: delta, ask, bid)
+      -> cluster::* (детекторы FOREX KIT)
       -> engine::BacktestPlayer
       -> BacktestReport
 ---
-## 6. Strategiya FOREX KIT
-Pravila sistemy v otdelnom dokumente: `docs/forex_kit_rules.md`.
-Kratkaya svodka signalov:
-- Stop-losy pokupateley / prodavtsov.
-- Rasprodazhi.
-- Bokoviki (>= 4 kasaniya).
-- V-urovni, zerkalnye urovni, plity.
-- Krupnyy igrok (parnye tsifry).
-- Delta, total-delta.
+## 6. Стратегия FOREX KIT
+Правила системы в отдельном документе: `docs/forex_kit_rules.md`.
+Краткая сводка сигналов:
+- Стоп-лосы покупателей и продавцов.
+- Распродажи.
+- Боковики (>= 4 касания).
+- V-уровни, зеркальные уровни, плиты.
+- Крупный игрок (парные цифры).
+- Дельта, тотал-дельта.
 ---
-## 7. Optimizatsiya
-Poka ne opredelena. Parametry dlya optimizatsii:
-- Razmer parnyh tsifr krupnogo igroka.
-- Razmer oblasti stopov.
-- Porog delty.
+## 7. Оптимизация
+Пока не определена. Параметры для оптимизации:
+- Размер парных цифр крупного игрока.
+- Размер области стопов.
+- Порог дельты.
 ---
-## 8. Zhurnal rezultatov
-Shema poka ne opredelena. Minimum poley:
+## 8. Журнал результатов
+Схема пока не определена. Минимум полей:
 `instrument, period, signal_type, direction, entry, exit, pnl, comment`.
 ---
 ## 9. CI
-Planiruetsya GitHub Actions:
-- Sborka na kazhdyy push.
-- Smoke-testy.
-- Proverka reestra (novyy fayl bez zapisi -> fail).
+Планируется GitHub Actions:
+- Сборка на каждый push.
+- Smoke-тесты.
+- Проверка реестра (новый файл без записи — fail).
 ---
 ## 10. TODO
-- [ ] Sozdat docs/forex_kit_rules.md -- polnye pravila sistemy.
-- [ ] Sozdat include/core/Types.h -- bazovye tipy.
-- [ ] Sozdat CMakeLists.txt.
-- [ ] Realizovat data::ClusterCsvReader.
-- [ ] Realizovat detektory signalov.
-- [ ] Nastroit CI.---
-## Protokol raboty i zerkalirovanie
-**Zhurnal:** `JOURNAL.md` - polnaya hronologiya shagov. Novye zapisi snizu.
-**Istochnik pravdy:** repozitoriy na GitHub.
-**Zerkalo:** `G:\Moy disk\AHexaTrader_BACKUP\spartak\` - kopii `JOURNAL.md` i `ARCHITECTURE.md`.
-### Pravilo obnovleniya etogo fayla
-`ARCHITECTURE.md` obnovlyaetsya **tolko posle prohozhdeniya testa (PASS)**.
-Promezhutochnye i neudachnye shagi fiksiruyutsya isklyuchitelno v `JOURNAL.md`.
-### Pravilo raboty s istochnikami
-Rabotaem tolko s `spartak-kit` i `spartak`.
-Iz "Spartaka" perenosim proverennye moduli obrabotki dannyh, upravleniya
-pozitsiey i dvizhka. Logika TAP ne perenositsya.
-### Sinhronizatsiya
-robocopy . "G:\Moy disk\AHexaTrader_BACKUP\spartak" JOURNAL.md ARCHITECTURE.md /XO---
-## Realizovannye moduli (proshli smoke-test)
-### data/DataSanitizer  [shag 002-004, PASS]
-- Naznachenie: otsechenie neregulyarnogo prefiksa potoka barov
-  (Daily-prefiks, gepy) -- strategiya startuet ot pervogo regulyarnogo bara.
-- Fayly: `include/data/DataSanitizer.h`, `src/data/DataSanitizer.cpp`
-- Istochnik: igorsegal/spartak (bez izmeneniy logiki).
-### data/BarStream  [shag 003-004, PASS]
-- Naznachenie: edinaya tochka podachi barov v bektest.
-- Rezhimy: Synthetic (port iz Spartaka), Vector (spartak-kit extension).
-- File mode ne perenesen -- zamenyaetsya na ClusterCsvReader v [005].
-- Fayly: `include/data/BarStream.h`, `src/data/BarStream.cpp`
-### tests/smoke_test  [shag 003-004, PASS]
-- 5 testov DataSanitizer: pustoy potok, regulyarnyy potok,
-  neregulyarnyy prefiks, otsutstvie regulyarnogo hvosta, Synthetic mode.
-- Fayl: `tests/smoke_test.cpp`
-
-### data/ClusterCsvReader  [shag 005, PASS]
-- Naznachenie: parsing CSV-vygruzok ClusterDelta (format FOREX KIT).
-- Format: `OPEN_DATE;OPEN_TIME;OPEN;HIGH;LOW;CLOSE;VOLUME;DELTA;ASK;BID`.
-- Osobennosti: data DD.MM.YYYY, vremya HH:MM, timestamp v UTC,
-  spred = 0 (v formate otsutstvuet), optsiya timezone_offset_hours.
-- Fayly: `include/data/ClusterCsvReader.h`, `src/data/ClusterCsvReader.cpp`
-### tests/test_cluster_csv  [shag 005, PASS]
-- Smoke-test parsera na 5 barah iz realnoy vygruzki.
-- Fayl: `tests/test_cluster_csv.cpp`
-- Dannye: `tests/data/sample.csv`
-
-### tests/csv_stats  [shag 005c, PASS]
-- Diagnosticheskaya utilita: statistika po lyubomu CSV-faylu ClusterDelta.
-- Pechataet: kol-vo barov, first/last ts, span, min low, max high, sum volume/delta/ask/bid.
-- Fayl: `tests/csv_stats.cpp`
-
-### data/BarStream.FileMode  [shag 006, PASS]
-- Naznachenie: chitat' CSV ClusterDelta napryamuyu cherez BarStream.
-- Rezhim: StreamMode::File. Konstruktor BarStream(const std::string& csv_path)
-  chitaet ves' fayl cherez ClusterCsvReader v source_, dalee rabotaet
-  Vetka Vector (bez duplirovaniya koda v next()).
-- Sanity: DataSanitizer.run() na 5-bar sample.csv - ok=false, bars_scanned=5
-  (ozhidaemo: confirm_bars=10, barov vsego 5).
-- Testy: tests/test_barstream_file.cpp - 3/3 ctest proshli.
-- Fayly: include/data/BarStream.h, src/data/BarStream.cpp.---
-## 11. Roadmap detektorov
-Poryadok - po sec.9 "Torgovyy process" i sec.7 "Mnogofaktornyy analiz"
-iz docs/forex_kit_rules.md.
-### Dostupno na tekushchih dannyh (bar-level ClusterDelta CSV)
-OHLC + DELTA + obshchie ASK/BID na bar.
-| # | Detektor           | Formaciya                        | Rezhim    | Shag |
-|---|--------------------|----------------------------------|-----------|------|
-| 1 | RangeDetector      | Bokovik >= 4 kasaniya (sec.6.1)     | okno      | 007  |
-| 2 | VLevelDetector     | V-uroven', impuls 2-9 svechey (sec.6.3) | okno  | 008  |
-| 3 | MirrorLevelDetector| Zerkalnyy uroven' (sec.6.5)         | okno      | 009  |
-| 4 | DeltaDetector      | Delta / total-delta (sec.7)         | okno      | 010  |
-### Trebuet footprint-dannyh (price-level clusters)
-Klastery po kazhdomu tsenovomu urovnyu vnutri bara. V tekushchey vygruzke
-ClusterDelta otsutstvuyut. Zhdem istochnik.
-| # | Detektor            | Formaciya                       |
-|---|---------------------|---------------------------------|
-| 5 | LiquidationDetector | Rasprodazha (sec.3, sec.6.4)          |
-| 6 | StopLossDetector    | Stop-lossy pokupateley/prodavtsov (sec.3, sec.6.2) |
-| 7 | SlabDetector        | Plita (sec.6.6)                    |
-| 8 | LargePlayerDetector | Krupnyy igrok, parnye tsifry (sec.4) |
-| 9 | ShadowDetector      | Ten' (sec.6.7)                     |
-### Zavisimost'
-- CompositeSignal (sec.7): minimum 2-3 detektora iz gruppy 1-4 dolzhny rabotat'.---
-## Bystryy start
+- [ ] Создать docs/forex_kit_rules.md — полные правила системы.
+- [ ] Создать include/core/Types.h — базовые типы.
+- [ ] Создать CMakeLists.txt.
+- [ ] Реализовать data::ClusterCsvReader.
+- [ ] Реализовать детекторы сигналов.
+- [ ] Настроить CI.
+---
+## 11. Roadmap детекторов
+Порядок — по §9 «Торговый процесс» и §7 «Многофакторный анализ»
+из docs/forex_kit_rules.md.
+### Доступно на текущих данных (bar-level ClusterDelta CSV)
+OHLC + DELTA + общие ASK/BID на бар.
+| # | Детектор           | Формация                          | Режим     | Шаг |
+|---|--------------------|-----------------------------------|-----------|-----|
+| 1 | RangeDetector      | Боковик >= 4 касания (§6.1)       | окно      | 007 |
+| 2 | VLevelDetector     | V-уровень, импульс 2-9 свечей (§6.3) | окно  | 008 |
+| 3 | MirrorLevelDetector| Зеркальный уровень (§6.5)         | окно      | 009 |
+| 4 | DeltaDetector      | Дельта / тотал-дельта (§7)        | окно      | 010 |
+| 5 | DivergenceDetector | Дивергенция RSI (§9)              | окно      | 011 |
+| 6 | FalseBreakoutDetector | Ложный пробой + закрепление (§6) | окно  | 012 |
+| 7 | VolumeProfileFilter| Профиль объёма, фильтр (§3)       | окно      | 013 |
+### Требует footprint-данных (price-level clusters)
+Кластеры по каждому ценовому уровню внутри бара. В текущей выгрузке
+ClusterDelta отсутствуют. Ждём источник.
+| # | Детектор            | Формация                          |
+|---|---------------------|-----------------------------------|
+| 8 | LiquidationDetector | Распродажа (§3, §6.4)             |
+| 9 | StopLossDetector    | Стоп-лосы покупателей/продавцов (§3, §6.2) |
+| 10| SlabDetector        | Плита (§6.6)                      |
+| 11| LargePlayerDetector | Крупный игрок, парные цифры (§4)  |
+| 12| ShadowDetector      | Тень (§6.7)                       |
+### Зависимость
+- CompositeSignal (§7): минимум 2-3 детектора из группы 1-7 должны работать.
+---
+## 12. Источник данных
+**Правило 12.1. Базовый источник — .bin XFBAR.**
+Локальные бинарные файлы в корне:
+    D:\AHexaTrader\1DataFiles\raw\<SYMBOL>\<SYMBOL>_<TF>.bin
+Например: D:\AHexaTrader\1DataFiles\raw\EURUSD\EURUSD_M5.bin
+**Правило 12.2. Формат .bin.**
+Структура заголовка и свечи — в docs/format_bin.md.
+Изменение структуры — новая версия в поле magic. Без новой версии — не менять.
+**Правило 12.3. Дополнительный источник — ClusterDelta CSV.**
+Используется только для DELTA / ASK / BID. Не заменяет .bin и не
+считается базовым.
+**Правило 12.4. Сетевые источники запрещены.**
+В бэктесте запрещены HTTP / API / любые online-источники.
+Данные должны быть на диске до старта прогонки.
+---
+## 13. Терминология (Glossary)
+Все термины торговой системы описаны в docs/glossary/.
+Шаблон, статусы и правила ведения — в docs/glossary/README.md.
+### Реестр файлов глоссария
+| Файл | Содержание | Статус |
+|---|---|---|
+| `README.md` | Шаблон, статусы, правила ведения | утверждено |
+| `01-fasy-rynka.md` | Накопление, тренд, распределение | утверждено |
+| `02-struktura.md` | IT, ZO, ORT, RM, закрепление | утверждено |
+| `03-signaly.md` | Дивергенция, ложный пробой, ловушка | план |
+| `04-urovni.md` | LU, PU, поддержка, сопротивление | план |
+| `05-obyom.md` | Добор, удержание, перелив | план |
+| `06-formatcii.md` | Боковик, V-уровень, зеркальный, плита | план |
+| `07-futprint.md` | Термины, ждущие footprint-данных | план |
+### Статусы терминов
+- `черновик` — записан, не проверен пользователем
+- `утверждено` — проверен и утверждён
+Термин из группы не переходит в `утверждено`, пока пользователь не подтвердил.
+---
+## 14. Протокол работы и зеркалирование
+**Журнал:** `JOURNAL.md` — полная хронология шагов. Новые записи снизу.
+**Источник правды:** репозиторий на GitHub.
+**Зеркало:** `G:\Мой диск\AHexaTrader_BACKUP\spartak\` — копии
+`JOURNAL.md` и `ARCHITECTURE.md`.
+### Правило обновления этого файла
+`ARCHITECTURE.md` обновляется **только после прохождения теста (PASS)**.
+Промежуточные и неудачные шаги фиксируются исключительно в `JOURNAL.md`.
+### Правило работы с источниками
+Работаем только с `spartak-kit` и `spartak`.
+Из «Спартака» переносим проверенные модули обработки данных, управления
+позицией и движка. Логика ТАП не переносится.
+### Синхронизация
+    robocopy . "G:\Мой диск\AHexaTrader_BACKUP\spartak" JOURNAL.md ARCHITECTURE.md /XO
+---
+## 15. Реализованные модули (прошли smoke-тест)
+### data/DataSanitizer  [шаг 002-004, PASS]
+- Назначение: отсечение нерегулярного префикса потока баров.
+- Отсекает Daily-префикс и гэпы. Стратегия стартует от первого регулярного бара.
+- Файлы: `include/data/DataSanitizer.h`, `src/data/DataSanitizer.cpp`
+- Источник: igorsegal/spartak (без изменения логики).
+### data/BarStream  [шаг 003-004, PASS]
+- Назначение: единая точка подачи баров в бэктест.
+- Режимы: Synthetic (порт из «Спартака»), Vector (расширение spartak-kit).
+- File-режим добавлен в шаге 006.
+- Файлы: `include/data/BarStream.h`, `src/data/BarStream.cpp`
+### tests/smoke_test  [шаг 003-004, PASS]
+- 5 тестов DataSanitizer: пустой поток, регулярный поток,
+  нерегулярный префикс, отсутствие регулярного хвоста, Synthetic-режим.
+- Файл: `tests/smoke_test.cpp`
+### data/ClusterCsvReader  [шаг 005, PASS]
+- Назначение: парсинг CSV-выгрузок ClusterDelta (формат FOREX KIT).
+- Формат: `OPEN_DATE;OPEN_TIME;OPEN;HIGH;LOW;CLOSE;VOLUME;DELTA;ASK;BID`.
+- Особенности: дата DD.MM.YYYY, время HH:MM, timestamp в UTC,
+  спред = 0 (в формате отсутствует), опция timezone_offset_hours.
+- Файлы: `include/data/ClusterCsvReader.h`, `src/data/ClusterCsvReader.cpp`
+### tests/test_cluster_csv  [шаг 005, PASS]
+- Smoke-тест парсера на 5 барах из реальной выгрузки.
+- Файл: `tests/test_cluster_csv.cpp`
+- Данные: `tests/data/sample.csv`
+### tests/csv_stats  [шаг 005c, PASS]
+- Диагностическая утилита: статистика по любому CSV-файлу ClusterDelta.
+- Печатает: кол-во баров, first/last ts, span, min low, max high,
+  sum volume/delta/ask/bid.
+- Файл: `tests/csv_stats.cpp`
+### data/BarStream.FileMode  [шаг 006, PASS]
+- Назначение: чтение CSV ClusterDelta напрямую через BarStream.
+- Режим: StreamMode::File. Конструктор BarStream(const std::string& csv_path)
+  читает весь файл через ClusterCsvReader в source_, далее работает
+  ветка Vector (без дублирования кода в next()).
+- Sanity: DataSanitizer.run() на 5-bar sample.csv — ok=false, bars_scanned=5
+  (ожидаемо: confirm_bars=10, баров всего 5).
+- Тесты: tests/test_barstream_file.cpp — 3/3 ctest прошли.
+- Файлы: `include/data/BarStream.h`, `src/data/BarStream.cpp`
+---
+## Быстрый старт
     cmake -S . -B build
     cmake --build build --config Debug
     cd build
     ctest -C Debug --output-on-failure
     cd ..
-Dobavil novyy fayl v include/ src/ tests/ - vnesi ego v sec.4 Reestr faylov.
-Dobavil detektor - vnesi v sec.11 Roadmap.---
-## 12. Istochnik dannyh
-**Pravilo 12.1. Bazovyy istochnik - .bin XFBAR.**
-Lokalnye binarnye fayly v korne:
-    D:\AHexaTrader\1DataFiles\raw\<SYMBOL>\<SYMBOL>_<TF>.bin
-Naprimer: D:\AHexaTrader\1DataFiles\raw\EURUSD\EURUSD_M5.bin
-**Pravilo 12.2. Format .bin.**
-Struktura zagolovka i svechi - v docs/format_bin.md.
-Izmenenie struktury = novaya versiya v pole magic. Bez novoy versii - ne menyat.
-**Pravilo 12.3. Dopolnitelnyy istochnik - ClusterDelta CSV.**
-Ispolzuetsya tolko dlya DELTA / ASK / BID. Ne zamenyaet .bin i ne
-schitaetsya bazovym.
-**Pravilo 12.4. Setevye istochniki zapreshcheny.**
-V backteste zapreshcheny HTTP / API / lyubye online-istochniki.
-Dannye dolzhny byt na diske do starta progonki.---
-## 13. Terminologiya (Glossary)
-Vse terminy torgovoy sistemy opisany v docs/glossary/.
-Shablon, statusy i pravila vedeniya - v docs/glossary/README.md.
-### Reestr faylov glossariya
-| Fayl | Soderzhanie | Status |
-|---|---|---|
-| `README.md` | Shablon, statusy, pravila vedeniya | utverzhdeno |
-| `01-fasy-rynka.md` | Nakoplenie, trend, raspredelenie | utverzhdeno |
-| `02-struktura.md` | IT, ZO, ORT, RM, zakreplenie | plan |
-| `03-signaly.md` | Divergenciya, lozhnyy proboy, lovushka | plan |
-| `04-urovni.md` | LU, PU, podderzhka, soprotivlenie | plan |
-| `05-obyom.md` | Dobor, uderzhanie, pereliv | plan |
-| `06-formatcii.md` | Bokovik, V-uroven, zerkalnyy, plita | plan |
-| `07-futprint.md` | Terminy zhduchie footprint-dannyh | plan |
-### Statusy terminov
-- `chernovik` - zapisan, ne proveren polzovatelem
-- `utverzhdeno` - proveren i utverzhden
-Termin iz gruppy ne perehodit v `utverzhdeno`, poka polzovatel ne podtverdil.
+Добавил новый файл в `include/` `src/` `tests/` — внеси его в раздел 4.
+Добавил детектор — внеси в раздел 11.
+**Обновлено:** 2026-10-03

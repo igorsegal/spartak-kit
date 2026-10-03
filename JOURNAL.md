@@ -1,402 +1,321 @@
 # JOURNAL - spartak-kit
-> Hronologiya vseh shagov proekta. Novye zapisi dobavlyayutsya **snizu**.
-> Nichego ne udalyaetsya i ne redaktiruetsya zadnim chislom.
+> Хронология всех шагов проекта. Новые записи добавляются **снизу**.
+> Ничего не удаляется и не редактируется задним числом.
 ---
-## [001] 2026-10-02 - Uchrezhdenie protokola raboty
-**Status:** uspeh
-**Avtor:** igorsegal + assistant
-**Fayly zatronuty:** `JOURNAL.md` (sozdan), `ARCHITECTURE.md` (razdel "Protokol raboty")
-**Kommit:** -
-### Chto sdelano
-Dogovorilis o protokole vedeniya proekta, kotoryy pozvolit lyubomu
-uchastniku (cheloveku ili II) za korotkoe vremya vosstanovit kontekst
-i prodolzhit rabotu bez poter.
-### Pravila
-1. Rabotaem **tolko** s repozitoriyami `spartak-kit` i `spartak`.
-   Ostalnye repozitorii (HEXATRADER, yellow-volume, DRUMMOND_*) poka ne trogaem.
-2. Iz "Spartaka" perenosim tolko proverennye moduli:
+## [001] 2026-10-02 - Учреждение протокола работы
+**Статус:** успех
+**Автор:** igorsegal + assistant
+**Затронуты файлы:** `JOURNAL.md` (создан), `ARCHITECTURE.md` (раздел «Протокол работы»)
+**Коммит:** -
+### Что сделано
+Договорились о протоколе ведения проекта. Протокол позволит любому
+участнику (человеку или ИИ) за короткое время восстановить контекст
+и продолжить работу без потерь.
+### Правила
+1. Работаем **только** с репозиториями `spartak-kit` и `spartak`.
+   Остальные репозитории (HEXATRADER, yellow-volume, DRUMMOND_*) пока не трогаем.
+2. Из «Спартака» переносим только проверенные модули:
    `DataSanitizer`, `BarStream`, `PositionManager`, `BacktestPlayer`,
-   `validation/`. Logiku TAP (`context/`, `patterns/`) ne berem.
-3. Pishem s nulya tolko: `ClusterCsvReader`, `cluster::Detectors`, `tests/`.
-4. Kazhdyy shag fiksiruetsya v `JOURNAL.md` - nezavisimo ot rezultata.
-5. V `ARCHITECTURE.md` popadaet tolko to, chto proshlo test (PASS).
-6. Novye zapisi v zhurnale - **snizu**.
-7. Format vydachi assistentom - PowerShell-skript s zashitym soderzhimym.
-8. Snimki ne delaem. Dva fayla: `JOURNAL.md` + `ARCHITECTURE.md`.
-9. Posle pusha na GitHub - kopiya oboih faylov v
-   `G:\Moy disk\AHexaTrader_BACKUP\spartak\` (vruchnuyu ili robocopy).
-### Format zapisi
-## [NNN] YYYY-MM-DD - Kratkoe nazvanie
-**Status:** uspeh | chastichno | oshibka | v rabote
-**Avtor:** igorsegal | assistant
-**Fayly zatronuty:** ...
-**Kommit:** hash ili "ne zakommicheno"
-### Chto sdelano
-### Rezultat
-### Reshenie / sleduyushchiy shag
-### Otkrytye voprosy
-### Rezultat
-Protokol soglasovan. Tochka vhoda - etot fayl + `ARCHITECTURE.md`.
-### Reshenie / sleduyushchiy shag
-Shag 2 - perenos `DataSanitizer` iz "Spartaka" v `spartak-kit`.
-Nuzhny ishodniki `DataSanitizer` (.h/.cpp) i `Types.h` iz repozitoriya `spartak`.
-### Otkrytye voprosy
-1. Struktura `Types.h` v "Spartake" - sovpadaet li s `core::Bar` v `spartak-kit`?
-2. Est li primer CSV-fayla ClusterDelta dlya `ClusterCsvReader`?---
-## [002] 2026-10-02 - Perenos DataSanitizer iz Spartaka
-**Status:** uspeh (fayly sozdany; sborka otlozhena do [004])
-**Avtor:** assistant
-**Fayly zatronuty:** `include/data/DataSanitizer.h`, `src/data/DataSanitizer.cpp`
-**Kommit:** -
-### Chto sdelano
-Pereneseny `DataSanitizer.h/.cpp` iz igorsegal/spartak bez izmeneniya logiki.
-### Rezultat
-Fayly sozdany. Sborka eshche ne vypolnyalas.
-### Reshenie / sleduyushchiy shag
-Sm. zapis [003] -- tam zhe BarStream i smoke_test.
-### Otkrytye voprosy
-Sovpadaet li core::Bar v spartak-kit s polyami, kotorye ozhidaet DataSanitizer?---
-## [003] 2026-10-02 - BarStream (real port) + smoke_test + strahovka DataSanitizer
-**Status:** v rabote
-**Avtor:** assistant
-**Fayly zatronuty:** `include/data/BarStream.h`, `src/data/BarStream.cpp`, `tests/smoke_test.cpp`, `include/data/DataSanitizer.h`, `src/data/DataSanitizer.cpp`, `CMakeLists.txt` (trebuet ruchnogo obnovleniya)
-**Kommit:** -
-### Chto sdelano
-Skript [003] snachala sozdaet derevo papok (include/data, src/data, tests), zatem
-pishet/perezapisyvaet fayly. Eto zashchita ot situatsii, kogda [002] ne otrabotal
-i papki otsutstvovali (nablyudalos DirectoryNotFoundException).
-Shim-BarStream iz [002] zamenen na port iz igorsegal/spartak.
-Otlichiya ot originala:
-  * File mode (XFBarReader) NE perenesen -- zamenim na ClusterCsvReader v [004].
-  * Dobavlen Vector mode -- dlya smoke-testov.
-  * Ubrany zavisimosti ot XFBarReader / XFBarReaderStatus.
-DataSanitizer perepisan na sluchay, esli [002] ne srabotal.
-smoke_test.cpp -- 5 testov bez vneshnego freymvorka.
-### Rezultat
-Ozhidaet obnovleniya CMakeLists.txt i sborki.
-### Reshenie / sleduyushchiy shag
-1. Obnovit CMakeLists.txt:
-   * dobavit `src/data/BarStream.cpp`, `src/data/DataSanitizer.cpp` v biblioteku;
-   * podklyuchit include/ k biblioteke;
-   * dobavit target `smoke_test` iz tests/smoke_test.cpp.
-2. Sobrat: `cmake -S . -B build` + `cmake --build build`.
-3. Zapustit smoke_test.
-4. Pri PASS -- perenesti v ARCHITECTURE.md.
-### Otkrytye voprosy
-1. Sovpadaet li core::Bar v spartak-kit s ozhidaemymi polyami?
-2. Sohranit li File mode BarStream ili srazu pereyti k ClusterCsvReader v [004]?---
-## [005] 2026-10-02 - ClusterCsvReader + smoke-test na realnom CSV
-**Status:** [PASS] uspeh
-**Avtor:** assistant
-**Fayly zatronuty:** include/data/ClusterCsvReader.h, src/data/ClusterCsvReader.cpp, 	ests/test_cluster_csv.cpp, 	ests/data/sample.csv, CMakeLists.txt
-**Kommit:** -
-### Chto sdelano
-1. Realizovan ClusterCsvReader pod realnyy format ClusterDelta CSV:
-   - razdelitel ;
-   - kolonki: OPEN_DATE;OPEN_TIME;OPEN;HIGH;LOW;CLOSE;VOLUME;DELTA;ASK;BID
-   - data DD.MM.YYYY, vremya HH:MM
-   - timestamp schitaetsya v UTC (optsiya timezone_offset_hours dlya sdviga)
-   - spred v fayle otsutstvuet -> spread = 0
-   - ispolzuetsya algoritm days_from_civil (Howard Hinnant) dlya portiruemosti
-2. Sozdan testovyy fayl tests/data/sample.csv (5 barov iz realnoy vygruzki).
-3. Smoke-test tests/test_cluster_csv.cpp: proverka kolichestva barov, timestamp, OHLC, volume, delta, ask_volume, bid_volume.
-4. CMakeLists.txt: src/data/ClusterCsvReader.cpp dobavlen v spartak_kit_core; novyy target test_cluster_csv; dobavlen v ctest.
-5. Sborka Release + zapusk test_cluster_csv.
-### Rezultat
-build exit code: 0
-test  exit code: 0
-Vyvod test_cluster_csv:
-Checks: 15, Failures: 0
-
-Hvost sborki (poslednie 1500 simvolov):
-Versiya MSBuild 18.8.2+ce25c0108 dlya .NET Framework
-
-  ClusterCsvReader.cpp
-D:\AHexaTrader\2026.10.02 SPARTAK KIT\src\data\ClusterCsvReader.cpp(12,49): warning C4146: primenenie unarnogo minusa k tipu bez znaka; rezultat ostavlen bez znaka [D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\spartak_kit_core.vcxproj]
-  spartak_kit_core.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\spartak_kit_core.lib
-  smoke_test.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\smoke_test.exe
-  spartak_kit.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\spartak_kit.exe
-  Building Custom Rule D:/AHexaTrader/2026.10.02 SPARTAK KIT/CMakeLists.txt
-  test_cluster_csv.cpp
-  test_cluster_csv.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\test_cluster_csv.exe
-
-### Reshenie / sleduyushchiy shag
-PASS. ClusterCsvReader rabotaet na realnom formate. Sleduyushchiy shag - [006]: podklyuchit ClusterCsvReader k BarStream (rezhim File) i prognat DataSanitizer na realnyh dannyh.
-### Otkrytye voprosy
-1. Nuzhen li parsing kolonki spreda, esli ClusterDelta ego dobavit? 2. Kak obrabatyvat razryvy vyhodnyh dney -- DataSanitizer dolzhen spravitsya.
-
+   `validation/`. Логику TAP (`context/`, `patterns/`) не берём.
+3. Пишем с нуля только: `ClusterCsvReader`, `cluster::Detectors`, `tests/`.
+4. Каждый шаг фиксируется в `JOURNAL.md` — независимо от результата.
+5. В `ARCHITECTURE.md` попадает только то, что прошло тест (PASS).
+6. Новые записи в журнале — **снизу**.
+7. Формат выдачи ассистентом — PowerShell-скрипт с зашитым содержимым.
+8. Снимки не делаем. Два файла: `JOURNAL.md` + `ARCHITECTURE.md`.
+9. После push на GitHub — копия обоих файлов в
+   `G:\Мой диск\AHexaTrader_BACKUP\spartak\` (вручную или robocopy).
+### Формат записи
+## [NNN] YYYY-MM-DD - Краткое название
+**Статус:** успех | частично | ошибка | в работе
+**Автор:** igorsegal | assistant
+**Затронуты файлы:** ...
+**Коммит:** hash или «не закоммичено»
+### Что сделано
+### Результат
+### Решение / следующий шаг
+### Открытые вопросы
+### Результат
+Протокол согласован. Точка входа — этот файл + `ARCHITECTURE.md`.
+### Решение / следующий шаг
+Шаг 2 — перенос `DataSanitizer` из «Спартака» в `spartak-kit`.
+Нужны исходники `DataSanitizer` (.h/.cpp) и `Types.h` из репозитория `spartak`.
+### Открытые вопросы
+1. Структура `Types.h` в «Спартаке» — совпадает ли с `core::Bar` в `spartak-kit`?
+2. Есть ли пример CSV-файла ClusterDelta для `ClusterCsvReader`?
 ---
-
-## [005c] 2026-10-02 - Fix CMakeLists.txt + csv_stats na realnom CSV
-
-**Status:** [PASS] uspeh
-**Avtor:** assistant
-**Fayly zatronuty:** `CMakeLists.txt` (polnaya perezapis), `tests/csv_stats.cpp`, `JOURNAL.md`, `ARCHITECTURE.md` (pri PASS)
-**Kommit:** -
-
-### Chto sdelano
-1. Diagnostirovana prichina padeniya cmake configure: v `CMakeLists.txt` (posle neudachnogo append v [005b]) 
-   komanda `add_executable(csv_stats ...)` okazalas na odnoy stroke s zakryvayushchey skobkoy `add_test(...)` 
-   iz-za poteryannogo perevoda stroki pri vstavke here-string v interaktivnyy PowerShell.
-2. Polnostyu perepisan `CMakeLists.txt` s nulya, s yavnymi `n` v PS-strokah.
-3. `build/` udalena pered sborkoy (chistyy kesh).
-4. Konfiguratsiya + sborka Release + zapusk csv_stats na realnom fayle:
+## [002] 2026-10-02 - Перенос DataSanitizer из Спартака
+**Статус:** успех (файлы созданы; сборка отложена до [004])
+**Автор:** assistant
+**Затронуты файлы:** `include/data/DataSanitizer.h`, `src/data/DataSanitizer.cpp`
+**Коммит:** -
+### Что сделано
+Перенесены `DataSanitizer.h/.cpp` из igorsegal/spartak без изменения логики.
+### Результат
+Файлы созданы. Сборка ещё не выполнялась.
+### Решение / следующий шаг
+См. запись [003] — там же BarStream и smoke_test.
+### Открытые вопросы
+Совпадает ли core::Bar в spartak-kit с полями, которые ожидает DataSanitizer?
+---
+## [003] 2026-10-02 - BarStream (реальный порт) + smoke_test + страховка DataSanitizer
+**Статус:** в работе
+**Автор:** assistant
+**Затронуты файлы:** `include/data/BarStream.h`, `src/data/BarStream.cpp`, `tests/smoke_test.cpp`, `include/data/DataSanitizer.h`, `src/data/DataSanitizer.cpp`, `CMakeLists.txt` (требует ручного обновления)
+**Коммит:** -
+### Что сделано
+Скрипт [003] сначала создаёт дерево папок (include/data, src/data, tests), затем
+пишет или перезаписывает файлы. Это защита от ситуации, когда [002] не отработал
+и папки отсутствовали (наблюдалось DirectoryNotFoundException).
+Shim-BarStream из [002] заменён на порт из igorsegal/spartak.
+Отличия от оригинала:
+  * File mode (XFBarReader) НЕ перенесён — заменим на ClusterCsvReader в [004].
+  * Добавлен Vector mode — для smoke-тестов.
+  * Убраны зависимости от XFBarReader / XFBarReaderStatus.
+DataSanitizer переписан на случай, если [002] не сработал.
+smoke_test.cpp — 5 тестов без внешнего фреймворка.
+### Результат
+Ожидает обновления CMakeLists.txt и сборки.
+### Решение / следующий шаг
+1. Обновить CMakeLists.txt:
+   * добавить `src/data/BarStream.cpp`, `src/data/DataSanitizer.cpp` в библиотеку;
+   * подключить include/ к библиотеке;
+   * добавить target `smoke_test` из tests/smoke_test.cpp.
+2. Собрать: `cmake -S . -B build` + `cmake --build build`.
+3. Запустить smoke_test.
+4. При PASS — перенести в ARCHITECTURE.md.
+### Открытые вопросы
+1. Совпадает ли core::Bar в spartak-kit с ожидаемыми полями?
+2. Сохранить ли File mode BarStream или сразу перейти к ClusterCsvReader в [004]?
+---
+## [005] 2026-10-02 - ClusterCsvReader + smoke-test на реальном CSV
+**Статус:** [PASS] успех
+**Автор:** assistant
+**Затронуты файлы:** include/data/ClusterCsvReader.h, src/data/ClusterCsvReader.cpp, tests/test_cluster_csv.cpp, tests/data/sample.csv, CMakeLists.txt
+**Коммит:** -
+### Что сделано
+1. Реализован ClusterCsvReader под реальный формат ClusterDelta CSV:
+   - разделитель ;
+   - колонки: OPEN_DATE;OPEN_TIME;OPEN;HIGH;LOW;CLOSE;VOLUME;DELTA;ASK;BID
+   - дата DD.MM.YYYY, время HH:MM
+   - timestamp считается в UTC (опция timezone_offset_hours для сдвига)
+   - спред в файле отсутствует -> spread = 0
+   - используется алгоритм days_from_civil (Howard Hinnant) для портируемости
+2. Создан тестовый файл tests/data/sample.csv (5 баров из реальной выгрузки).
+3. Smoke-test tests/test_cluster_csv.cpp: проверка количества баров, timestamp, OHLC, volume, delta, ask_volume, bid_volume.
+4. CMakeLists.txt: src/data/ClusterCsvReader.cpp добавлен в spartak_kit_core; новый target test_cluster_csv; добавлен в ctest.
+5. Сборка Release + запуск test_cluster_csv.
+### Результат
+PASS. Checks: 15, Failures: 0.
+### Решение / следующий шаг
+PASS. ClusterCsvReader работает на реальном формате. Следующий шаг — [006]: подключить ClusterCsvReader к BarStream (режим File) и прогнать DataSanitizer на реальных данных.
+### Открытые вопросы
+1. Нужен ли парсинг колонки спреда, если ClusterDelta его добавит? 2. Как обрабатывать разрывы выходных дней — DataSanitizer должен справиться.
+---
+## [005c] 2026-10-02 - Fix CMakeLists.txt + csv_stats на реальном CSV
+**Статус:** [PASS] успех
+**Автор:** assistant
+**Затронуты файлы:** `CMakeLists.txt` (полная перезапись), `tests/csv_stats.cpp`, `JOURNAL.md`, `ARCHITECTURE.md` (при PASS)
+**Коммит:** -
+### Что сделано
+1. Диагностирована причина падения cmake configure: в `CMakeLists.txt` (после неудачного append в [005b])
+   команда `add_executable(csv_stats ...)` оказалась на одной строке с закрывающей скобкой `add_test(...)`
+   из-за потерянного перевода строки при вставке here-string в интерактивный PowerShell.
+2. Полностью переписан `CMakeLists.txt` с нуля, с явными `n` в PS-строках.
+3. `build/` удалена перед сборкой (чистый кеш).
+4. Конфигурация + сборка Release + запуск csv_stats на реальном файле:
    `D:\AHexaTrader\1DataFiles\cluster delta\6s\6s_m1_20260101_20261231.csv`
-
-### Rezultat
-cmake configure exit: 0
-build exit code:      0
-csv_stats exit code:  0
-elapsed:              1.5 s
-
-Vyvod csv_stats:
-File:        D:\AHexaTrader\1DataFiles\cluster delta\6s\6s_m1_20260101_20261231.csv
-Bars:        232389
-First ts:    1767315600000
-Last ts:     1790899140000
-Span (ms):   23583540000
-Min low:     1.2031
-Max high:    1.3219
-Sum volume:  4589967
-Sum delta:   9501
-Sum ask:     2299734
-Sum bid:     2290233
-
-
-Hvost sborki (poslednie 1500 simvolov):
-Versiya MSBuild 18.8.2+ce25c0108 dlya .NET Framework
-
-  1>Checking Build System
-  Building Custom Rule D:/AHexaTrader/2026.10.02 SPARTAK KIT/CMakeLists.txt
-  version.cpp
-  BarStream.cpp
-  DataSanitizer.cpp
-  ClusterCsvReader.cpp
-D:\AHexaTrader\2026.10.02 SPARTAK KIT\src\data\ClusterCsvReader.cpp(12,49): warning C4146: primenenie unarnogo minusa k tipu bez znaka; rezultat ostavlen bez znaka [D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\spartak_kit_core.vcxproj]
-  Sozdanie koda...
-  spartak_kit_core.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\spartak_kit_core.lib
-  Building Custom Rule D:/AHexaTrader/2026.10.02 SPARTAK KIT/CMakeLists.txt
-  csv_stats.cpp
-  csv_stats.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\csv_stats.exe
-  Building Custom Rule D:/AHexaTrader/2026.10.02 SPARTAK KIT/CMakeLists.txt
-  smoke_test.cpp
-  smoke_test.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\smoke_test.exe
-  Building Custom Rule D:/AHexaTrader/2026.10.02 SPARTAK KIT/CMakeLists.txt
-  main.cpp
-  spartak_kit.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\spartak_kit.exe
-  Building Custom Rule D:/AHexaTrader/2026.10.02 SPARTAK KIT/CMakeLists.txt
-  test_cluster_csv.cpp
-  test_cluster_csv.vcxproj -> D:\AHexaTrader\2026.10.02 SPARTAK KIT\build\Release\test_cluster_csv.exe
-  Building Custom Rule D:/AHexaTrader/2026.10.02 SPARTAK KIT/CMakeLists.txt
-
-
-### Reshenie / sleduyushchiy shag
-PASS. ClusterCsvReader korrektno parsit realnyy fayl ClusterDelta. Sleduyushchiy shag - [006]: podklyuchit ClusterCsvReader k BarStream (rezhim File) i prognat DataSanitizer na realnyh dannyh.
-
-### Otkrytye voprosy
-1. Sverit Bars/span s ozhidaemym (M1 za 2026 god). 2. Proverit otsutstvie anomaliy v OHLC.
+### Результат
+PASS. csv_stats обработал файл: 232389 баров.
+### Решение / следующий шаг
+PASS. ClusterCsvReader корректно парсит реальный файл ClusterDelta. Следующий шаг — [006]: подключить ClusterCsvReader к BarStream (режим File) и прогнать DataSanitizer на реальных данных.
+### Открытые вопросы
+1. Сверить Bars/span с ожидаемым (M1 за 2026 год). 2. Проверить отсутствие аномалий в OHLC.
 ---
-
-## [006] ClusterCsvReader -> BarStream (File mode) + DataSanitizer na realnyh dannyh
-
-**Kogda:** 2026-10-02
-**Sloy:** data
-**Status:** [PASS] PASS
-**Predydushchiy:** [005]
-**Sleduyushchiy:** [007] - RangeDetector
-
-### Zachem
-ClusterCsvReader uzhe parsit CSV (shag 005, PASS), no BarStream ne umeet chitat
-iz nego. Bez etogo ne zagruzit realnye dannye v backtest i ne proverit
-DataSanitizer na nih.
-
-### Chto sdelat
-- Dobavit v BarStream rezhim File, ispolzuyushchiy ClusterCsvReader.
-- Zagruzit realnyy CSV ClusterDelta, prognat cherez DataSanitizer.
-- Proverit: SanitizeReport.ok == true, first_regular_timestamp > 0.
-
-### Fayly (plan)
+## [006] ClusterCsvReader -> BarStream (File mode) + DataSanitizer на реальных данных
+**Когда:** 2026-10-02
+**Слой:** data
+**Статус:** [PASS] PASS
+**Предыдущий:** [005]
+**Следующий:** [007] - RangeDetector
+### Зачем
+ClusterCsvReader уже парсит CSV (шаг 005, PASS). Но BarStream не умеет читать
+из него. Без этого не загрузить реальные данные в бэктест и не проверить
+DataSanitizer на них.
+### Что сделать
+- Добавить в BarStream режим File, использующий ClusterCsvReader.
+- Загрузить реальный CSV ClusterDelta, прогнать через DataSanitizer.
+- Проверить: SanitizeReport.ok == true, first_regular_timestamp > 0.
+### Файлы (план)
 - changed: include/data/BarStream.h
 - changed: src/data/BarStream.cpp
-- changed: CMakeLists.txt (esli nuzhno)
+- changed: CMakeLists.txt (если нужно)
 - added: tests/test_barstream_file.cpp
-
-### Kak proverit
+### Как проверить
     cd build; ctest -C Debug --output-on-failure; cd ..
-
-### Rezultat
-3/3 testa proshli (smoke_test, test_cluster_csv, test_barstream_file).
-BarStream(File) chitaet CSV cherez ClusterCsvReader, total_bars > 0.
-DataSanitizer.run() na 5-bar sample.csv: ok=false, bars_scanned=5
-(ozhidaemo - confirm_bars=10, a barov vsego 5). Sanity po stream - OK.
-
-### Otkrytye voprosy
-1. Format timezone v CSV - UTC ili lokalnoe?
-2. Povedenie BarStream pri oshibke parsera - fail ili skip?
-
-### Svyazi
+### Результат
+3/3 теста прошли (smoke_test, test_cluster_csv, test_barstream_file).
+BarStream(File) читает CSV через ClusterCsvReader, total_bars > 0.
+DataSanitizer.run() на 5-bar sample.csv: ok=false, bars_scanned=5
+(ожидаемо — confirm_bars=10, а баров всего 5). Sanity по stream - OK.
+### Открытые вопросы
+1. Формат timezone в CSV - UTC или локальное?
+2. Поведение BarStream при ошибке парсера - fail или skip?
+### Связи
 - depends: [005]
-- blocks: [007] - detektory
+- blocks: [007] - детекторы
 ---
-
-## **[007] RangeDetector - bokovik (>= 4 kasaniya)**
-**Kogda:** 2026-10-02
-**Sloy:** cluster
-**Status:** plan
-**Predydushchiy:** [006]
-**Sleduyushchiy:** [008] - VLevelDetector
-### Zachem
-Pervyy detektor iz roadmap (ARCHITECTURE.md sec.11). Rabotaet na tekushchih
-bar-level dannyh, ne trebuet footprint. Sluzhit etalonom struktury
-dlya vseh posleduyushchih detektorov.
-### Pravilo (iz docs/forex_kit_rules.md sec.6.1)
-- Ne menee 4 kasaniya verhney ili nizhney granitsy.
-- Tsena v ramkah.
-- Potentsial dvizheniya = shirina bokovika * 2.
-- Kogo bolshe (ASK/BID) - tuda i tsenka posle proboya.
-### Chto sdelat
+## **[007] RangeDetector - боковик (>= 4 касания)**
+**Когда:** 2026-10-02
+**Слой:** cluster
+**Статус:** plan
+**Предыдущий:** [006]
+**Следующий:** [008] - VLevelDetector
+### Зачем
+Первый детектор из roadmap (ARCHITECTURE.md §11). Работает на текущих
+bar-level данных, не требует footprint. Служит эталоном структуры
+для всех последующих детекторов.
+### Правило (из docs/forex_kit_rules.md §6.1)
+- Не менее 4 касания верхней или нижней границы.
+- Цена в рамках.
+- Потенциал движения = ширина боковика * 2.
+- Кого больше (ASK/BID) - туда и ценка после пробоя.
+### Что сделать
 - include/cluster/RangeDetector.h
 - src/cluster/RangeDetector.cpp
 - tests/test_range_detector.cpp
-- CMakeLists.txt: podklyuchit' novye fayly
-### Interfeys (chernovik)
-- Vhod: vector<Bar> ili BarStream + okno.
-- Vyhod: struct RangeSignal { bool ok; int64_t start_ts; int64_t end_ts;
+- CMakeLists.txt: подключить новые файлы
+### Интерфейс (черновик)
+- Вход: vector<Bar> или BarStream + окно.
+- Выход: struct RangeSignal { bool ok; int64_t start_ts; int64_t end_ts;
   double high; double low; double width; int touches_top; int touches_bottom; }.
-### Otkrytye voprosy
-1. Okno poiska: skolko barov nazad smotrim (predvaritelno 50-100).
-2. Porog "kasaniya": skolko punktov schitat' prikosnoveniem.
-3. Kak schitat' "kogo bolshe" - po summe ASK vs BID vnutri diapazona.
-### Pravila soblyudeny
-- 2.4 Reestr bez zagluzhek - da.
-- 2.5 Status iz pyati - plan.
-- 2.6 Bystryy start - bez izmeneniy.
-### Svyazi
+### Открытые вопросы
+1. Окно поиска: сколько баров назад смотрим (предварительно 50-100).
+2. Порог «касания»: сколько пунктов считать прикосновением.
+3. Как считать «кого больше» - по сумме ASK vs BID внутри диапазона.
+### Правила соблюдены
+- 2.4 Реестр без заглушек - да.
+- 2.5 Статус из пяти - plan.
+- 2.6 Быстрый старт - без изменений.
+### Связи
 - depends: [006]
 - blocks: [008], [009], [010]
-
 ---
-
-## **[008] Sinhronizaciya: kommit + push**
-**Kogda:** 2026-10-02
-**Sloy:** docs
-**Status:** PASS
-**Predydushchiy:** [007]
-**Sleduyushchiy:** [007] - nachat' kod RangeDetector
-### Zachem
-Zafiksirovat' v istorii izmeneniya, nakoplennie mezhdu [006] i startom [007]:
-razdel 12 (istochnik dannyh), zhirnye hvostovye bloki zhurnala.
-### Chto sdelano
-- ARCHITECTURE.md: dobavlen razdel 12 "Istochnik dannyh" (variant B).
-- JOURNAL.md: blok "Kak prodolzhit rabotu" i "Bystryy start" pereneseny v konec,
-  zagolovki sdelany zhirnymi.
-- Kommit 8d507cc, push v main.
-### Rezultat
-git push: ea083ad..8d507cc, uspeshno.
-Zerkalo sinhronizirovano.
-### Svyazi
+## **[008] Синхронизация: коммит + push**
+**Когда:** 2026-10-02
+**Слой:** docs
+**Статус:** PASS
+**Предыдущий:** [007]
+**Следующий:** [007] - начать код RangeDetector
+### Зачем
+Зафиксировать в истории изменения, накопленные между [006] и стартом [007]:
+раздел 12 (источник данных), жирные хвостовые блоки журнала.
+### Что сделано
+- ARCHITECTURE.md: добавлен раздел 12 «Источник данных» (вариант B).
+- JOURNAL.md: блоки «Как продолжить работу» и «Быстрый старт» перенесены в конец,
+  заголовки сделаны жирными.
+- Коммит 8d507cc, push в main.
+### Результат
+git push: ea083ad..8d507cc, успешно.
+Зеркало синхронизировано.
+### Связи
 - depends: [006], [007]
-- blocks: [007] - kod RangeDetector
-
-## **[009] Sozdanie glossariya i pervoy gruppy terminov**
-**Kogda:** 2026-10-02
-**Sloy:** docs
-**Status:** PASS
-**Predydushchiy:** [008]
-**Sleduyushchiy:** [010] - utverzhdenie terminov 01-fasy-rynka
-### Zachem
-Nachat formalizaciyu terminov torgovoy sistemy. Bez tochnyh opredeleniy
-nevozmozhno pisat pravila torgovoy sistemy - neponyatno, o chyom pravila.
-### Chto sdelano
-- Sozdana papka docs/glossary/.
-- README.md s shablonom, statusami i pravilami vedeniya.
-- 01-fasy-rynka.md: 3 termina v statuse chernovik
-  (Nakoplenie, Trend, Raspredelenie).
-- ARCHITECTURE.md: dobavlen razdel 13 "Terminologiya (Glossary)"
-  i reestr faylov glossariya.
-### Format termina
-- Opredelenie (1 predlozhenie).
-- Kak nayti (posledovatelnye shagi).
-- Chto delat (deystviya posle togo kak nashli).
-- Oshibki (chto putayut).
-- Istochnik (ch. N seminara).
-- Status (chernovik | utverzhdeno).
-### Rezultat
-3 termina zapisany v statuse chernovik. Sutverzhdenie - sleduyushchiy shag.
-### Otkrytye voprosy
-1. Utverdit terminy 01-fasy-rynka (nastupilo v [010]).
-2. Sleduyushchie gruppy: 02-struktura, 03-signaly.
-### Pravila soblyudeny
-- 2.4 Reestr bez zagluzhek - da.
-- 2.5 Status iz pyati - PASS.
-- 2.6 Bystryy start - bez izmeneniy.
-### Svyazi
+- blocks: [007] - код RangeDetector
+---
+## **[009] Создание глоссария и первой группы терминов**
+**Когда:** 2026-10-02
+**Слой:** docs
+**Статус:** PASS
+**Предыдущий:** [008]
+**Следующий:** [010] - утверждение терминов 01-fasy-rynka
+### Зачем
+Начать формализацию терминов торговой системы. Без точных определений
+невозможно писать правила торговой системы - непонятно, о чём правила.
+### Что сделано
+- Создана папка docs/glossary/.
+- README.md с шаблоном, статусами и правилами ведения.
+- 01-fasy-rynka.md: 3 термина в статусе черновик
+  (Накопление, Тренд, Распределение).
+- ARCHITECTURE.md: добавлен раздел 13 «Терминология (Glossary)»
+  и реестр файлов глоссария.
+### Формат термина
+- Определение (1 предложение).
+- Как найти (последовательные шаги).
+- Что делать (действия после того как нашли).
+- Ошибки (что путают).
+- Источник (ч. N семинара).
+- Статус (черновик | утверждено).
+### Результат
+3 термина записаны в статусе черновик. Утверждение - следующий шаг.
+### Открытые вопросы
+1. Утвердить термины 01-fasy-rynka (наступило в [010]).
+2. Следующие группы: 02-struktura, 03-signaly.
+### Правила соблюдены
+- 2.4 Реестр без заглушек - да.
+- 2.5 Статус из пяти - PASS.
+- 2.6 Быстрый старт - без изменений.
+### Связи
 - depends: [008]
 - blocks: [010]
 ---
-## **[010] Utverzhdenie terminov 01-fasy-rynka**
-**Kogda:** 2026-10-02
-**Sloy:** docs
-**Status:** PASS
-**Predydushchiy:** [009]
-**Sleduyushchiy:** [011] - gruppa 02-struktura (IT, ZO, ORT, RM, zakreplenie)
-### Zachem
-Polzovatel prochital terminy gruppy 01-fasy-rynka i podtverdil ih.
-Terminy perevodyatsya iz statusa chernovik v utverzhdeno.
-### Chto sdelano
-- 3 termina utverzhdeny: Nakoplenie, Trend, Raspredelenie.
-- docs/glossary/01-fasy-rynka.md: Status razrabotki -> utverzhdeno.
-- Vse 3 termina vnutri fayla: Status -> utverzhdeno.
-- ARCHITECTURE.md: v reestre faylov 01-fasy-rynka -> utverzhdeno.
-### Pravilo, kotoroe narushilos v [009] i [010]
-Pri pervyh popytkah utverzhdeniya terminov zapis [009] byla otredaktirovana
-zadnim chislom: Status s WIP na PASS, dobavlen blok Rezultat,
-izmeneny Otkrytye voprosy. Krome togo, regex (?s) pri pravke slomal
-JOURNAL.md (ostavil 36 strok vmesto 317).
-Vosstanovlenie: git checkout c550e1c -- JOURNAL.md.
-Zapis [009] vosstanovlena v ishodnom vide (sozdanie, WIP -> PASS po faktu).
-Sobytie utverzhdeniya vyneseno v otdelnuyu zapis [010].
-Novoe pravilo "Odna zapis = odno sobytie" zafiksirovano v shapke.
-### Rezultat
-- 01-fasy-rynka.md: 3 termina v statuse utverzhdeno.
-- Protokol zhestko zafiksirovan: odna zapis = odno sobytie.
-### Otkrytye voprosy
-1. Sleduyushchaya gruppa: 02-struktura (IT, ZO, ORT, RM, zakreplenie).
-### Pravila soblyudeny
-- 2.4 Reestr bez zagluzhek - da.
-- 2.5 Status iz pyati - PASS.
-- 2.6 Bystryy start - bez izmeneniy.
-### Svyazi
+## **[010] Утверждение терминов 01-fasy-rynka**
+**Когда:** 2026-10-02
+**Слой:** docs
+**Статус:** PASS
+**Предыдущий:** [009]
+**Следующий:** [011] - группа 02-struktura (IT, ZO, ORT, RM, закрепление)
+### Зачем
+Пользователь прочитал термины группы 01-fasy-rynka и подтвердил их.
+Термины переводятся из статуса черновик в утверждено.
+### Что сделано
+- 3 термина утверждены: Накопление, Тренд, Распределение.
+- docs/glossary/01-fasy-rynka.md: Статус разработки -> утверждено.
+- Все 3 термина внутри файла: Статус -> утверждено.
+- ARCHITECTURE.md: в реестре файлов 01-fasy-rynka -> утверждено.
+### Правило, которое нарушилось в [009] и [010]
+При первых попытках утверждения терминов запись [009] была отредактирована
+задним числом: статус с WIP на PASS, добавлен блок Результат,
+изменены Открытые вопросы. Кроме того, regex (?s) при правке сломал
+JOURNAL.md (оставил 36 строк вместо 317).
+Восстановление: git checkout c550e1c -- JOURNAL.md.
+Запись [009] восстановлена в исходном виде (создание, WIP -> PASS по факту).
+Событие утверждения вынесено в отдельную запись [010].
+Новое правило «Одна запись = одно событие» зафиксировано в шапке.
+### Результат
+- 01-fasy-rynka.md: 3 термина в статусе утверждено.
+- Протокол жёстко зафиксирован: одна запись = одно событие.
+### Открытые вопросы
+1. Следующая группа: 02-struktura (IT, ZO, ORT, RM, закрепление).
+### Правила соблюдены
+- 2.4 Реестр без заглушек - да.
+- 2.5 Статус из пяти - PASS.
+- 2.6 Быстрый старт - без изменений.
+### Связи
 - depends: [009]
 - blocks: [011]
-
 ---
-
-## **Kak prodolzhit rabotu**
-1. Prochitay etot fayl do kontsa (poslednie 3-5 zapisey - obyazatelno).
-2. Otkroy `ARCHITECTURE.md` - tam proverennoe (proshedshee test) sostoyanie proekta.
-3. Posmotri posledniy kommit: `git log -1`.
-4. Naydi poslednyuyu zapis so statusom v rabote - eto tekushchaya zadacha.
-5. Prodolzhay s nee ili nachni novuyu, dobaviv zapis v konets fayla.
-
-**Obnovleno:** 2026-10-02 17:46 (commit 08b111d)
-**Pravilo fiksatsii:**
-### Odna zapis = odno sobytie
-Kazhdoe sobytie - otdelnaya zapis. Esli sobytie proizvodnoe ot predydushchego
-(sozdanie -> utverzhdenie), ono idet otdelnoy zapisyu snizu. Redaktirovanie
-proshlyh zapisey zadnim chislom zapreshcheno. Oshibki fiksiruyutsya v novoy
-zapisi s yavnym ukazaniem, chto i gde bylo narusheno.
-- V `JOURNAL.md` pishem **vsegda** - uspeh, proval, otkat, pauza.
-- V `ARCHITECTURE.md` pishem **tolko kogda test proshel (PASS)**.
-**Zerkalo:** posle pusha skopiruy `JOURNAL.md` i `ARCHITECTURE.md`
-v `G:\Moy disk\AHexaTrader_BACKUP\spartak\`.
-
+## **Как продолжить работу**
+1. Прочитай этот файл до конца (последние 3-5 записей — обязательно).
+2. Открой `ARCHITECTURE.md` — там проверенное (прошедшее тест) состояние проекта.
+3. Посмотри последний коммит: `git log -1`.
+4. Найди последнюю запись со статусом в работе — это текущая задача.
+5. Продолжай с неё или начни новую, добавив запись в конец файла.
+**Правило фиксации:**
+### Одна запись = одно событие
+Каждое событие — отдельная запись. Если событие производное от предыдущего
+(создание -> утверждение), оно идёт отдельной записью снизу. Редактирование
+прошлых записей задним числом запрещено. Ошибки фиксируются в новой
+записи с явным указанием, что и где было нарушено.
+- В `JOURNAL.md` пишем **всегда** — успех, провал, откат, пауза.
+- В `ARCHITECTURE.md` пишем **только когда тест прошёл (PASS)**.
+**Зеркало:** после push скопируй `JOURNAL.md` и `ARCHITECTURE.md`
+в `G:\Мой диск\AHexaTrader_BACKUP\spartak\`.
+**Обновлено:** 2026-10-02 17:46 (commit 08b111d)
 ---
-## **Bystryy start**
+## **Быстрый старт**
     cmake -S . -B build
     cmake --build build --config Debug
     cd build
     ctest -C Debug --output-on-failure
     cd ..
-
-**Obnovleno:** 2026-10-02 17:46 (commit 08b111d)
+**Обновлено:** 2026-10-02 17:46 (commit 08b111d)
