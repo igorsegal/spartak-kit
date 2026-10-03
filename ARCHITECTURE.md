@@ -67,7 +67,9 @@
 | `include/data/DataSanitizer.h` | Санитайзер (потоковый, BarStream)  | готов |
 | `src/data/DataSanitizer.cpp`   | Реализация DataSanitizer            | готов |
 | `include/data/ClusterCsvReader.h` | Парсер CSV ClusterDelta          | готов |
-| `src/data/ClusterCsvReader.cpp`   | Реализация ClusterCsvReader      | готов |
+| `src/data/ClusterCsvReader.cpp`   | Реализация ClusterCsvReader      | готов || `include/cluster/RangeDetector.h` | Детектор боковика                | готов |
+| `src/cluster/RangeDetector.cpp`   | Реализация RangeDetector          | готов |
+| `tests/test_range_detector.cpp`   | Тест RangeDetector                | готов |
 | `tests/smoke_test.cpp`         | Smoke-тесты DataSanitizer/BarStream | готов |
 | `tests/test_cluster_csv.cpp`   | Тест парсера CSV                    | готов |
 | `tests/test_barstream_file.cpp`| Тест BarStream(File) + DataSanitizer | готов |
@@ -125,7 +127,7 @@
 OHLC + DELTA + общие ASK/BID на бар.
 | # | Детектор           | Формация                          | Режим     | Шаг |
 |---|--------------------|-----------------------------------|-----------|-----|
-| 1 | RangeDetector      | Боковик >= 4 касания (§6.1)       | окно      | 007 |
+| 1 | RangeDetector      | Боковик >= 4 касания (§6.1)       | окно      | 007 PASS |
 | 2 | VLevelDetector     | V-уровень, импульс 2-9 свечей (§6.3) | окно  | 008 |
 | 3 | MirrorLevelDetector| Зеркальный уровень (§6.5)         | окно      | 009 |
 | 4 | DeltaDetector      | Дельта / тотал-дельта (§7)        | окно      | 010 |

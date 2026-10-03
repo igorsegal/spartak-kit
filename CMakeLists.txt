@@ -16,6 +16,7 @@ add_library(spartak_kit_core STATIC
     src/data/BarStream.cpp
     src/data/DataSanitizer.cpp
     src/data/ClusterCsvReader.cpp
+    src/cluster/RangeDetector.cpp
 )
 target_include_directories(spartak_kit_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_compile_features(spartak_kit_core PUBLIC cxx_std_20)
@@ -39,3 +40,7 @@ target_link_libraries(csv_stats PRIVATE spartak_kit_core)
 add_executable(test_barstream_file tests/test_barstream_file.cpp)
 target_link_libraries(test_barstream_file PRIVATE spartak_kit_core)
 add_test(NAME test_barstream_file COMMAND test_barstream_file "${CMAKE_CURRENT_SOURCE_DIR}/tests/data/sample.csv")
+
+add_executable(test_range_detector tests/test_range_detector.cpp)
+target_link_libraries(test_range_detector PRIVATE spartak_kit_core)
+add_test(NAME test_range_detector COMMAND test_range_detector)

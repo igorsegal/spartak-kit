@@ -168,7 +168,7 @@ DataSanitizer.run() на 5-bar sample.csv: ok=false, bars_scanned=5
 ## **[007] RangeDetector - боковик (>= 4 касания)**
 **Когда:** 2026-10-02
 **Слой:** cluster
-**Статус:** plan
+**Статус:** PASS
 **Предыдущий:** [006]
 **Следующий:** [008] - VLevelDetector
 ### Зачем
