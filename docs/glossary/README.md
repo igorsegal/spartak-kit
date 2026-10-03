@@ -1,28 +1,34 @@
-# Glossary - terminologiya SPARTAK KIT
-Edinoe mesto dlya vseh terminov torgovoy sistemy FOREX KIT.
-Kazhdyy termin - odna zapis po fiksirovannomu shablonu.
-## Struktura
-    01-fasy-rynka.md      Fazy: nakoplenie, trend, raspredelenie
-    02-struktura.md       Struktura: IT, ZO, ORT, RM, zakreplenie
-    03-signaly.md         Signaly: divergenciya, lozhnyy proboy, lovushka
-    04-urovni.md          Urovni: LU, PU, podderzhka, soprotivlenie
-    05-obyom.md           Obyom: dobor, uderzhanie, pereliv
-    06-formatcii.md       Formacii: bokovik, V-uroven, zerkalnyy, plita
-    07-futprint.md        Terminy zhduchie footprint-dannyh
-## Shablon termina
-    ## Termin: <nazvanie>
-    **Opredelenie.** Odno predlozhenie. Chto eto takoe.
-    **Kak nayti.** Posledovatelnye shagi. Chto smotrim.
-    **Chto delat.** Deystviya posle togo kak nashli.
-    **Oshibki.** Chto putayut. Kak otlichit ot pohozhego.
-    **Istochnik.** Ch. N seminara + citata ili paragraf.
-    **Status.** chernovik | utverzhdeno
-## Statusy
-- chernovik   - termin zapisan, ne proveren polzovatelem
-- utverzhdeno - termin proveren i utverzhden
-## Pravila vedeniya
-1. Kazhdyy termin - otdelnaya zapis po shablonu. Bez otstupleniy.
-2. Odin termin - odno opredelenie. Esli dvuhsmyslenno - delit na dva.
-3. Istochnik obyazatelen. Bez nego - eto ne glossariy, eto mnenie.
-4. Yazyk - translit, ASCII-only.
-5. Status menyaetsya tolko posle proverki.
+# Глоссарий — терминология SPARTAK KIT
+Единое место для всех терминов торговой системы FOREX KIT.
+Каждый термин — одна запись по шаблону.
+## Структура
+    01-fasy-rynka.md      Фазы: накопление, тренд, распределение
+    02-struktura.md       Структура: IT, ZO, ORT, RM, закрепление
+    03-signaly.md         Сигналы: дивергенция, ложный пробой, ловушка
+    04-urovni.md          Уровни: LU, PU, поддержка, сопротивление
+    05-obyom.md           Объём: добор, удержание, перелив
+    06-formatcii.md       Формации: боковик, V-уровень, зеркальный, плита
+    07-futprint.md        Термины, ждущие footprint-данных
+## Шаблон термина
+    ## Термин: <название>
+    **Определение.**
+    Одно предложение. Что это такое.
+    **Как найти.**
+    Последовательные шаги. Что смотрим.
+    **Что делать.**
+    Действия после того, как нашли.
+    **Ошибки.**
+    Что путают. Как отличить от похожего.
+    **Источник.**
+    Ч. N семинара. Цитата или параграф.
+    **Статус.** черновик | утверждено
+## Статусы
+- черновик — термин записан, не проверен пользователем
+- утверждено — термин проверен и утверждён
+## Правила ведения
+1. Каждый термин — отдельная запись по шаблону. Без отступлений.
+2. Один термин — одно определение. Если двусмысленно — делить на два.
+3. Источник обязателен. Без него — это не глоссарий, это мнение.
+4. Язык — русский. Кодировка — UTF-8 без BOM.
+5. Статус меняется только после проверки.
+6. Стиль — ASD-STE100. Короткие предложения. Одна мысль — одно предложение.
