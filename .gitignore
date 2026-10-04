@@ -49,4 +49,8 @@ ipch/
 # System
 Thumbs.db
 desktop.ini
-.DS_Storeobserver_log.txt
+.DS_Store
+observer_log.txt
+forexkit_src/
+AUDIT.md
+GAPS.md
