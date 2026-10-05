@@ -149,3 +149,4 @@ ARCHITECTURE.md, JOURNAL.md, README.md глоссария, 01-fasy-rynka.md — 
 **В JOURNAL.md — всегда. В ARCHITECTURE.md — только PASS.**
 **Зеркало:** G:\Мой диск\AHexaTrader_BACKUP\spartak\.
 **Обновлено:** 2026-10-04 (шаг [017] PASS)
+step 018 | Ревизия правил FOREX KIT v5 | Аудит 28 транскриптов, 5 итераций. Закрыты: Bid для стопов покупателей, 80% отработки, приоритет золото→валюта. Остались 17 открытых вопросов, все требуют видеопросмотра. Файлы: docs/forex_kit_rules.md (v5), GAPS.md, AUDIT.md (в .gitignore). | коммит pending
