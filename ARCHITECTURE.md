@@ -1,11 +1,11 @@
 # SPARTAK KIT :: АРХИТЕКТУРА
 Мастер-документ проекта. Обновляется при каждом изменении структуры.
-Создан: 2026-10-02. Обновлено: 2026-10-04 (шаг [017] PASS).
+Создан: 2026-10-02. Обновлено: 2026-10-06 (после ревизии правил FOREX KIT).
 ---
 ## 1. Паспорт
 - **Название:** SPARTAK KIT
 - **Назначение:** C++20 бэктестер торговой системы FOREX KIT.
-- **Источник системы:** курс FOREX KIT (28 видео), docs/forex_kit_rules.md.
+- **Источник системы:** курс FOREX KIT (28 видео + 34 скриншота), `docs/forex_kit_rules.md` (v16, ревизия завершена 2026-10-06).
 - **Источник данных:** ClusterDelta CSV.
 - **Стек:** C++20, CMake >= 3.20, MSVC 2022+.
 - **Пространство имён:** spartak::core, spartak::data, spartak::cluster.
@@ -67,14 +67,14 @@ plan | WIP | PASS | FAIL | ROLLBACK
       -> BacktestReport
 ---
 ## 6. Стратегия FOREX KIT
-Правила: docs/forex_kit_rules.md.
-Сигналы: стоп-лосы покупателей/продавцов, распродажи, боковики (>=4 касания),
-V-уровни, зеркальные уровни, плиты, крупный игрок (парные цифры), дельта, тотал-дельта.
+Правила: `docs/forex_kit_rules.md` v16.
+Ключевые сигналы: боковик (≥4 касания, ровный), V-уровень (2–9 свечей, на объёме), снятие стопов (требует уровня и зеркального уровня), распродажа (закрыта цифрами сверху и снизу), зеркальный уровень, плита, тень, уровень крупного игрока, каскадный уровень.
 ---
 ## 7. Оптимизация
 - Размер парных цифр крупного игрока.
 - Размер области стопов.
 - Порог дельты.
+- Ширина боковика (для расчёта потенциала 1:2).
 ---
 ## 8. Журнал результатов
 instrument, period, signal_type, direction, entry, exit, pnl, comment.
@@ -83,32 +83,39 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 Планируется GitHub Actions: сборка, smoke-тесты, проверка реестра.
 ---
 ## 10. TODO
-- [ ] docs/forex_kit_rules.md
-- [ ] Настроить CI
+- [ ] Настроить CI.
+- [ ] Применить правила к детекторам (после ревизии правил).
+- [ ] Реализовать DeltaDetector.
+- [ ] Реализовать MirrorLevelDetector.
+- [ ] Реализовать StopHuntDetector.
 ---
 ## 11. Roadmap детекторов
-### Доступно на текущих данных
+### Доступно на текущих данных (bar-level ClusterDelta CSV)
 | # | Детектор | Формация | Шаг |
 |---|----------|----------|-----|
-| 1 | RangeDetector | Боковик >= 4 касания | 007 PASS |
-| 2 | VLevelDetector | V-уровень, импульс 2-9 свечей | 016-017 PASS |
-| 3 | MirrorLevelDetector | Зеркальный уровень | 018 |
-| 4 | DeltaDetector | Дельта / тотал-дельта | 019 |
+| 1 | RangeDetector | Боковик ≥ 4 касания, ровный, не перебитый | 007 PASS |
+| 2 | VLevelDetector | V-уровень: импульс 2–9 свечей, виден на объёме | 016-017 PASS |
+| 3 | MirrorLevelDetector | Зеркальный уровень: держали → пробили → ретест | 018 |
+| 4 | DeltaDetector | Дельта / тотал-дельта: показывает толпу, след крупного игрока | 019 |
 | 5 | DivergenceDetector | Дивергенция RSI | 020 |
 | 6 | FalseBreakoutDetector | Ложный пробой | 021 |
-| 7 | VolumeProfileFilter | Профиль объёма | 022 |
-### Требует footprint-данных
+| 7 | VolumeProfileFilter | Профиль BitAsk: покупатели/продавцы, натягивать от начала боковика до пробития | 022 |
+| 8 | CascadeLevelDetector | Каскадный уровень: два уровня подряд, два отбоя | 023 |
+| 9 | StopHuntDetector | Снятие стопов: требует уровня и зеркального уровня, направление вниз | 024 |
+### Требует footprint-данных (price-level clusters)
 | # | Детектор |
 |---|----------|
-| 8 | LiquidationDetector |
-| 9 | StopLossDetector |
-| 10 | SlabDetector |
-| 11 | LargePlayerDetector |
-| 12 | ShadowDetector |
+| 10 | LiquidationDetector |
+| 11 | StopLossDetector |
+| 12 | SlabDetector |
+| 13 | LargePlayerDetector |
+| 14 | ShadowDetector |
+### Зависимость
+CompositeSignal: минимум 2–3 фактора из группы 1–9.
 ---
 ## 12. Источник данных
-**12.1.** Базовый — .bin XFBAR: D:\AHexaTrader\1DataFiles\raw\<SYMBOL>\<SYMBOL>_<TF>.bin
-**12.2.** Формат .bin — docs/format_bin.md.
+**12.1.** Базовый — .bin XFBAR: `D:\AHexaTrader\1DataFiles\raw\<SYMBOL>\<SYMBOL>_<TF>.bin`.
+**12.2.** Формат .bin — `docs/format_bin.md`.
 **12.3.** ClusterDelta CSV — только DELTA/ASK/BID.
 **12.4.** Сетевые источники запрещены.
 ---
@@ -129,7 +136,7 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 **Источник правды:** GitHub.
 **Зеркало:** G:\Мой диск\AHexaTrader_BACKUP\spartak\.
 **Правило:** ARCHITECTURE обновляется только после PASS.
-**Синхронизация:** robocopy . "G:\Мой диск\AHexaTrader_BACKUP\spartak" JOURNAL.md ARCHITECTURE.md /XO
+**Синхронизация:** `robocopy . "G:\Мой диск\AHexaTrader_BACKUP\spartak" JOURNAL.md ARCHITECTURE.md /XO`.
 ---
 ## 15. Реализованные модули
 ### data/DataSanitizer [002-004 PASS]
@@ -141,11 +148,25 @@ Synthetic / Vector / File. File — через ClusterCsvReader.
 ### tests/csv_stats [005c PASS]
 Диагностика CSV: кол-во баров, first/last ts, span, min low, max high, sum volume/delta/ask/bid.
 ### cluster/RangeDetector [007 PASS]
-Детектор боковика (>= 4 касания границ).
+Детектор боковика (≥ 4 касания границ).
 ### cluster/VLevelDetector [016-017 PASS]
 Детектор V-уровня: импульс 2-9 свечей, уровни Фибо 0/50/100%.
 Оптимизация: префиксные суммы, O(N·max_len).
 Валидация: validate(). Работа с отрицательными ценами.
+### Ревизия правил FOREX KIT [шаги 018-030 PASS]
+- **Файл:** docs/forex_kit_rules.md v16.
+- **Основание:** аудит 28 транскриптов + OCR 34 скриншотов.
+- **Инструменты:** MCP-shell с командами `ask` и `synthesize`, DeepSeek API, Tesseract 5.5.3.
+- **Закрыто 17 открытых вопросов.** Все ключевые термины и правила верифицированы.
+- **Удалено:** «запертый объём» — термин не существует.
+- **Готово к реализации детекторов.**
+---
+## 16. Источники
+- **Курс FOREX KIT:** 28 транскриптов в `forexkit_src/transcripts/`.
+- **Скриншоты:** 34 изображения в `forexkit_src/SCREENS/`.
+- **OCR скриншотов:** `SCREENS_OCR.txt` (генерируется Tesseract).
+- **Правила системы:** `docs/forex_kit_rules.md` v16.
+- **MCP-shell:** `D:\mcp-experiments\mcp_shell.py`.
 ---
 ## Быстрый старт
     cmake -S . -B build
