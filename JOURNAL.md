@@ -174,6 +174,12 @@ L16: набор 5-ки, 11-11, 36 → завершение 6-6. Продавец
 **Автор:** igorsegal + assistant
 ### Что сделано
 RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze нашёл пропуск бара 0, исправлено, повторный analyze чист. ARCHITECTURE.md обновлён.
+---
+## [035] 2026-10-06 - FalseBreakoutDetector WIP
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+ТЗ прошло 3 раунда архитектурного ревью (spec). Код написан, тест FAIL. Детектор не находит формацию: touches=0, хотя касаний 7. Пробой и возврат по close. Причина не найдена, нужно продолжить отладку. Файлы: specs/021_false_breakout.txt, src/cluster/FalseBreakoutDetector.cpp, include/cluster/FalseBreakoutDetector.h, tests/test_false_breakout_detector.cpp.
 
 ---
 ## Как продолжить работу

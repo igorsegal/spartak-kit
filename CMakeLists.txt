@@ -21,6 +21,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/MirrorLevelDetector.cpp
     src/cluster/DeltaDetector.cpp
     src/cluster/DivergenceDetector.cpp
+    src/cluster/FalseBreakoutDetector.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -58,12 +59,16 @@ add_executable(test_delta_detector tests/test_delta_detector.cpp)
 target_link_libraries(test_delta_detector PRIVATE spartak_kit_core)
 add_test(NAME test_delta_detector COMMAND test_delta_detector)
 
+add_executable(test_divergence_detector tests/test_divergence_detector.cpp)
+target_link_libraries(test_divergence_detector PRIVATE spartak_kit_core)
+add_test(NAME test_divergence_detector COMMAND test_divergence_detector)
+
+add_executable(test_false_breakout_detector tests/test_false_breakout_detector.cpp)
+target_link_libraries(test_false_breakout_detector PRIVATE spartak_kit_core)
+add_test(NAME test_false_breakout_detector COMMAND test_false_breakout_detector)
+
 add_executable(debug_mirror tests/debug_mirror.cpp)
 target_link_libraries(debug_mirror PRIVATE spartak_kit_core)
 
 add_executable(csv_stats tests/csv_stats.cpp)
 target_link_libraries(csv_stats PRIVATE spartak_kit_core)
-
-add_executable(test_divergence_detector tests/test_divergence_detector.cpp)
-target_link_libraries(test_divergence_detector PRIVATE spartak_kit_core)
-add_test(NAME test_divergence_detector COMMAND test_divergence_detector)
