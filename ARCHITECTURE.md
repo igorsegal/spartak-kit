@@ -56,6 +56,9 @@ plan | WIP | PASS | FAIL | ROLLBACK
 | tests/test_cluster_csv.cpp | Тест парсера CSV | готов |
 | tests/test_barstream_file.cpp | Тест BarStream(File) + DataSanitizer | готов |
 | tests/csv_stats.cpp | Диагностика CSV (утилита) | готов |
+| include/cluster/DeltaDetector.h | Детектор аномальной дельты | готов |
+| src/cluster/DeltaDetector.cpp | Реализация DeltaDetector | готов |
+| tests/test_delta_detector.cpp | Тест DeltaDetector | готов |
 Статусы: готов, в работе, заглушка, мусор.
 ---
 ## 5. Поток данных
@@ -96,7 +99,7 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 | 1 | RangeDetector | Боковик ≥ 4 касания, ровный, не перебитый | 007 PASS |
 | 2 | VLevelDetector | V-уровень: импульс 2–9 свечей, виден на объёме | 016-017 PASS |
 | 3 | MirrorLevelDetector | Зеркальный уровень: держали → пробили → ретест | 018 |
-| 4 | DeltaDetector | Дельта / тотал-дельта: показывает толпу, след крупного игрока | 019 |
+| 4 | DeltaDetector | Дельта / тотал-дельта: показывает толпу, след крупного игрока | 019 PASS |
 | 5 | DivergenceDetector | Дивергенция RSI | 020 |
 | 6 | FalseBreakoutDetector | Ложный пробой | 021 |
 | 7 | VolumeProfileFilter | Профиль BitAsk: покупатели/продавцы, натягивать от начала боковика до пробития | 022 |
@@ -160,6 +163,12 @@ Synthetic / Vector / File. File — через ClusterCsvReader.
 - **Закрыто 17 открытых вопросов.** Все ключевые термины и правила верифицированы.
 - **Удалено:** «запертый объём» — термин не существует.
 - **Готово к реализации детекторов.**
+### cluster/DeltaDetector [019 PASS]
+- **Назначение:** аномальная дельта, направление толпы, противоречие с ценой.
+- **Алгоритм:** среднее и stddev дельты по окну 50 баров. Аномалия: |delta| > 2.5 × stddev. Направление — по знаку дельты. Противоречие: толпа покупает, свеча падает (или наоборот).
+- **Файлы:** `include/cluster/DeltaDetector.h`, `src/cluster/DeltaDetector.cpp`.
+- **Тест:** `tests/test_delta_detector.cpp` — 15/15 ctest.
+- **analyze:** OK, дефектов не найдено.
 ---
 ## 16. Источники
 - **Курс FOREX KIT:** 28 транскриптов в `forexkit_src/transcripts/`.

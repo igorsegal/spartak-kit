@@ -19,6 +19,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/RangeDetector.cpp
     src/cluster/VLevelDetector.cpp
     src/cluster/MirrorLevelDetector.cpp
+    src/cluster/DeltaDetector.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -28,38 +29,36 @@ target_include_directories(spartak_kit_core PUBLIC
 # --- Тесты ---
 enable_testing()
 
-# smoke_test
 add_executable(smoke_test tests/smoke_test.cpp)
 target_link_libraries(smoke_test PRIVATE spartak_kit_core)
 add_test(NAME smoke_test COMMAND smoke_test)
 
-# test_cluster_csv
 add_executable(test_cluster_csv tests/test_cluster_csv.cpp)
 target_link_libraries(test_cluster_csv PRIVATE spartak_kit_core)
 add_test(NAME test_cluster_csv COMMAND test_cluster_csv)
 
-# test_barstream_file
 add_executable(test_barstream_file tests/test_barstream_file.cpp)
 target_link_libraries(test_barstream_file PRIVATE spartak_kit_core)
 add_test(NAME test_barstream_file COMMAND test_barstream_file)
 
-# test_range_detector
 add_executable(test_range_detector tests/test_range_detector.cpp)
 target_link_libraries(test_range_detector PRIVATE spartak_kit_core)
 add_test(NAME test_range_detector COMMAND test_range_detector)
 
-# test_vlevel_detector
 add_executable(test_vlevel_detector tests/test_vlevel_detector.cpp)
 target_link_libraries(test_vlevel_detector PRIVATE spartak_kit_core)
 add_test(NAME test_vlevel_detector COMMAND test_vlevel_detector)
 
-# test_mirror_detector
 add_executable(test_mirror_detector tests/test_mirror_detector.cpp)
 target_link_libraries(test_mirror_detector PRIVATE spartak_kit_core)
 add_test(NAME test_mirror_detector COMMAND test_mirror_detector)
 
-# csv_stats (утилита)
-add_executable(csv_stats tests/csv_stats.cpp)
-target_link_libraries(csv_stats PRIVATE spartak_kit_core)
+add_executable(test_delta_detector tests/test_delta_detector.cpp)
+target_link_libraries(test_delta_detector PRIVATE spartak_kit_core)
+add_test(NAME test_delta_detector COMMAND test_delta_detector)
+
 add_executable(debug_mirror tests/debug_mirror.cpp)
 target_link_libraries(debug_mirror PRIVATE spartak_kit_core)
+
+add_executable(csv_stats tests/csv_stats.cpp)
+target_link_libraries(csv_stats PRIVATE spartak_kit_core)
