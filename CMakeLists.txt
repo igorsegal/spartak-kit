@@ -20,6 +20,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/VLevelDetector.cpp
     src/cluster/MirrorLevelDetector.cpp
     src/cluster/DeltaDetector.cpp
+    src/cluster/DivergenceDetector.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -62,3 +63,7 @@ target_link_libraries(debug_mirror PRIVATE spartak_kit_core)
 
 add_executable(csv_stats tests/csv_stats.cpp)
 target_link_libraries(csv_stats PRIVATE spartak_kit_core)
+
+add_executable(test_divergence_detector tests/test_divergence_detector.cpp)
+target_link_libraries(test_divergence_detector PRIVATE spartak_kit_core)
+add_test(NAME test_divergence_detector COMMAND test_divergence_detector)
