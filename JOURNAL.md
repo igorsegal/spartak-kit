@@ -180,6 +180,12 @@ RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze н
 **Автор:** igorsegal + assistant
 ### Что сделано
 ТЗ прошло 3 раунда архитектурного ревью (spec). Код написан, тест FAIL. Детектор не находит формацию: touches=0, хотя касаний 7. Пробой и возврат по close. Причина не найдена, нужно продолжить отладку. Файлы: specs/021_false_breakout.txt, src/cluster/FalseBreakoutDetector.cpp, include/cluster/FalseBreakoutDetector.h, tests/test_false_breakout_detector.cpp.
+---
+## [035] 2026-10-07 - FalseBreakoutDetector PASS
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+ТЗ прошло 3 раунда spec. Код: пробой после формирования уровня, переход close. Тест 12/12. Причина FAIL: пробой искался от начала окна.
 
 ---
 ## Как продолжить работу

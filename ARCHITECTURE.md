@@ -62,6 +62,9 @@ plan | WIP | PASS | FAIL | ROLLBACK
 | include/cluster/DivergenceDetector.h | Детектор дивергенции RSI | готов |
 | src/cluster/DivergenceDetector.cpp | Реализация DivergenceDetector | готов |
 | tests/test_divergence_detector.cpp | Тест DivergenceDetector | готов |
+| include/cluster/FalseBreakoutDetector.h | Детектор ложного пробоя | готов |
+| src/cluster/FalseBreakoutDetector.cpp | Реализация FalseBreakoutDetector | готов |
+| tests/test_false_breakout_detector.cpp | Тест FalseBreakoutDetector | готов |
 Статусы: готов, в работе, заглушка, мусор.
 ---
 ## 5. Поток данных
@@ -104,7 +107,7 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 | 3 | MirrorLevelDetector | Зеркальный уровень: держали → пробили → ретест | 018 |
 | 4 | DeltaDetector | Дельта / тотал-дельта: показывает толпу, след крупного игрока | 019 PASS |
 | 5 | DivergenceDetector | Дивергенция RSI | 020 PASS|
-| 6 | FalseBreakoutDetector | Ложный пробой | 021 |
+| 6 | FalseBreakoutDetector | Ложный пробой | 021 PASS|
 | 7 | VolumeProfileFilter | Профиль BitAsk: покупатели/продавцы, натягивать от начала боковика до пробития | 022 |
 | 8 | CascadeLevelDetector | Каскадный уровень: два уровня подряд, два отбоя | 023 |
 | 9 | StopHuntDetector | Снятие стопов: требует уровня и зеркального уровня, направление вниз | 024 |
@@ -181,6 +184,14 @@ Synthetic / Vector / File. File — через ClusterCsvReader.
 - **Файлы:** `include/cluster/DeltaDetector.h`, `src/cluster/DeltaDetector.cpp`.
 - **Тест:** `tests/test_delta_detector.cpp` — 15/15 ctest.
 - **analyze:** OK, дефектов не найдено.
+### cluster/FalseBreakoutDetector [021 PASS]
+- **Формация:** пробой close + закрепление + возврат.
+- **Алгоритм:** уровень формируется касаниями (≥3). Пробой ищется ПОСЛЕ формирования — переход close через уровень. Закрепление ≥2 баров. Возврат — close пересёк уровень обратно.
+- **Фильтр:** поле `against_trend` для CompositeSignal.
+- **Файлы:** `include/cluster/FalseBreakoutDetector.h`, `src/cluster/FalseBreakoutDetector.cpp`.
+- **Тест:** 12/12 ctest.
+- **ТЗ:** `specs/021_false_breakout.txt`, 3 раунда архитектурного ревью через MCP.
+- **Правка после FAIL:** пробой искался от начала окна, а не после формирования уровня.
 
 ---
 ## 16. Источники
