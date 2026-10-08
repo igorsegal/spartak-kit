@@ -65,6 +65,9 @@ plan | WIP | PASS | FAIL | ROLLBACK
 | include/cluster/FalseBreakoutDetector.h | Детектор ложного пробоя | готов |
 | src/cluster/FalseBreakoutDetector.cpp | Реализация FalseBreakoutDetector | готов |
 | tests/test_false_breakout_detector.cpp | Тест FalseBreakoutDetector | готов |
+| include/cluster/VolumeProfileFilter.h | Фильтр профиля BitAsk | готов |
+| src/cluster/VolumeProfileFilter.cpp | Реализация VolumeProfileFilter | готов |
+| tests/test_volume_profile.cpp | Тест VolumeProfileFilter | готов |
 Статусы: готов, в работе, заглушка, мусор.
 ---
 ## 5. Поток данных
@@ -108,7 +111,7 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 | 4 | DeltaDetector | Дельта / тотал-дельта: показывает толпу, след крупного игрока | 019 PASS |
 | 5 | DivergenceDetector | Дивергенция RSI | 020 PASS|
 | 6 | FalseBreakoutDetector | Ложный пробой | 021 PASS|
-| 7 | VolumeProfileFilter | Профиль BitAsk: покупатели/продавцы, натягивать от начала боковика до пробития | 022 |
+| 7 | VolumeProfileFilter | Профиль BitAsk: покупатели/продавцы, натягивать от начала боковика до пробития | 022 PASS|
 | 8 | CascadeLevelDetector | Каскадный уровень: два уровня подряд, два отбоя | 023 |
 | 9 | StopHuntDetector | Снятие стопов: требует уровня и зеркального уровня, направление вниз | 024 |
 ### Требует footprint-данных (price-level clusters)
@@ -192,6 +195,14 @@ Synthetic / Vector / File. File — через ClusterCsvReader.
 - **Тест:** 12/12 ctest.
 - **ТЗ:** `specs/021_false_breakout.txt`, 3 раунда архитектурного ревью через MCP.
 - **Правка после FAIL:** пробой искался от начала окна, а не после формирования уровня.
+### cluster/VolumeProfileFilter [022 PASS]
+- **Назначение:** профиль BitAsk — перевес покупателей/продавцов.
+- **Алгоритм:** 10–50 бинов, распределение ask/bid, imbalance, POC, value area (Market Profile).
+- **Направление:** покупателей больше → Sell, продавцов больше → Buy.
+- **Файлы:** `include/cluster/VolumeProfileFilter.h`, `src/cluster/VolumeProfileFilter.cpp`.
+- **Тест:** 18/18 ctest.
+- **ТЗ:** `specs/022_volume_profile.txt` v5, 4 раунда spec через MCP.
+- **MCP-промпт:** `SPEC_REVIEW_PROMPT` разделён на Класс A (логика) и Класс B (калибровка). Параметры калибровки отделены.
 
 ---
 ## 16. Источники

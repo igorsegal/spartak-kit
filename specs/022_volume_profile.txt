@@ -1,0 +1,89 @@
+ТЗ: VolumeProfileFilter (версия 5, финал)
+
+НАЗНАЧЕНИЕ
+Фильтр на основе профиля BitAsk. Показывает перевес покупателей/продавцов внутри окна.
+
+СЕМАНТИКА ПОЛЕЙ core::Bar
+ask_volume - объём рыночных покупок (покупатель бьёт по ask).
+bid_volume - объём рыночных продаж (продавец бьёт по bid).
+volume - общий объём. Может отличаться от ask_volume + bid_volume.
+delta - не используется.
+
+ВХОД
+std::vector<core::Bar>. Детектор принимает окно как есть. Боковик не ищет.
+
+ПОРЯДОК ШАГОВ (ЖЁСТКО)
+1. Единый проход по барам. Бар отбрасывается, если хотя бы одно:
+   - NaN или Inf в open, high, low, close, volume, ask_volume, bid_volume.
+   - high < low (инвертированные данные).
+   - ask_volume < 0 или bid_volume < 0 или volume < 0.
+   - volume > 0, но ask_volume + bid_volume == 0.
+2. Проверить число валидных баров >= min_bars_for_profile. Иначе ok false.
+3. Найти min_low и max_high по валидным барам. Если max_high - min_low <= 0 - ok false.
+4. bins = n / 2, ограничить [10, 50]. n - число валидных баров.
+5. bin_width = (max_high - min_low) / bins.
+   Если bin_width <= 0 или не конечно - ok false.
+6. Для каждого бара распределить ask_volume и bid_volume по бинам, которые покрывает [low, high).
+   Границы бинов: полуоткрытый [low_i, low_i + bin_width). Последний бин включает max_high.
+   Сумма распределённого = исходному ask_volume и bid_volume.
+   Если high == low - весь объём в бин close. Если close вне диапазона - прижать к ближайшей границе.
+7. Просуммировать ask и bid по каждому бину.
+8. ask_total = сумма ask по бинам. bid_total = сумма bid.
+9. Если ask_total + bid_total == 0 - ok false.
+10. Если ask_total == 0 или bid_total == 0 - ok false.
+11. imbalance = (ask_total - bid_total) / (ask_total + bid_total).
+12. Если abs(imbalance) < neutral_threshold - ok false.
+13. Если imbalance >= 0 (покупателей больше или равно) - direction = Sell.
+    Если imbalance < 0 (продавцов больше) - direction = Buy.
+14. POC - бин с максимальным ask + bid. При равенстве - первый по индексу.
+15. Value Area - value_area_pct от total. Алгоритм Market Profile:
+    начать с POC. Поочерёдно добавить соседний бин сверху или снизу с большим объёмом.
+    При равенстве - сначала верхний. Если один сосед закончился - берём другой.
+    Остановиться, когда накоплено >= value_area_pct * total.
+    Если bins_used < 2 ИЛИ соседи закончились до набора - value area = весь диапазон.
+    value_area_high = правая граница верхнего бина VA.
+    value_area_low = левая граница нижнего бина VA.
+
+ПАРАМЕТРЫ (требуют калибровки на реальных данных)
+value_area_pct = 0.70
+min_bars_for_profile = 20
+neutral_threshold = 0.05
+
+ВЫХОД VolumeProfileSignal
+ok bool
+direction OrderSide - Buy при ok false (значение по умолчанию)
+poc double - цена центра POC-бина
+value_area_high double
+value_area_low double
+ask_total double
+bid_total double
+imbalance double
+bins_used int
+total_volume double - ask_total + bid_total
+
+При ok == false все числовые поля = 0.
+
+КРАЕВЫЕ СЛУЧАИ
+Пустой вектор - ok false.
+Все бары отфильтрованы - ok false.
+Валидных меньше min_bars_for_profile - ok false.
+max_high - min_low <= 0 - ok false.
+ask_total + bid_total == 0 - ok false.
+ask_total == 0 или bid_total == 0 - ok false.
+high == low, close вне диапазона - прижать к границе.
+Отрицательные цены - работают.
+bins_used < 2 - value area = весь диапазон.
+
+ЧЕГО ДЕТЕКТОР НЕ ДЕЛАЕТ
+Не ищет боковик.
+Не проверяет тренд.
+Не комбинируется с другими детекторами напрямую.
+Не блокирует CompositeSignal.
+
+СЛОЖНОСТЬ
+O(n * bins) в худшем случае.
+
+ПРАВИЛА FOREX KIT
+Пункт 7.1: профиль BitAsk.
+Пункт 7.1: покупателей больше - вниз, продавцов больше - вверх.
+

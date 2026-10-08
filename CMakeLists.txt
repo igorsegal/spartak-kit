@@ -22,6 +22,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/DeltaDetector.cpp
     src/cluster/DivergenceDetector.cpp
     src/cluster/FalseBreakoutDetector.cpp
+    src/cluster/VolumeProfileFilter.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -72,3 +73,7 @@ target_link_libraries(debug_mirror PRIVATE spartak_kit_core)
 
 add_executable(csv_stats tests/csv_stats.cpp)
 target_link_libraries(csv_stats PRIVATE spartak_kit_core)
+
+add_executable(test_volume_profile tests/test_volume_profile.cpp)
+target_link_libraries(test_volume_profile PRIVATE spartak_kit_core)
+add_test(NAME test_volume_profile COMMAND test_volume_profile)
