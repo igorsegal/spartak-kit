@@ -71,6 +71,9 @@ plan | WIP | PASS | FAIL | ROLLBACK
 | include/cluster/CascadeLevelDetector.h | Детектор каскадного уровня | готов |
 | src/cluster/CascadeLevelDetector.cpp | Реализация CascadeLevelDetector | готов |
 | tests/test_cascade_level.cpp | Тест CascadeLevelDetector | готов |
+| include/cluster/StopHuntDetector.h | Детектор снятия стопов | готов |
+| src/cluster/StopHuntDetector.cpp | Реализация StopHuntDetector | готов |
+| tests/test_stop_hunt.cpp | Тест StopHuntDetector | готов |
 Статусы: готов, в работе, заглушка, мусор.
 ---
 ## 5. Поток данных
@@ -102,7 +105,6 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 - [ ] Применить правила к детекторам (после ревизии правил).
 - [ ] Реализовать DeltaDetector.
 - [ ] Реализовать MirrorLevelDetector.
-- [ ] Реализовать StopHuntDetector.
 ---
 ## 11. Roadmap детекторов
 ### Доступно на текущих данных (bar-level ClusterDelta CSV)
@@ -116,7 +118,7 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 | 6 | FalseBreakoutDetector | Ложный пробой | 021 PASS|
 | 7 | VolumeProfileFilter | Профиль BitAsk: покупатели/продавцы, натягивать от начала боковика до пробития | 022 PASS|
 | 8 | CascadeLevelDetector | Каскадный уровень: два уровня подряд, два отбоя | 023 PASS|
-| 9 | StopHuntDetector | Снятие стопов: требует уровня и зеркального уровня, направление вниз | 024 |
+| 9 | StopHuntDetector | Снятие стопов: требует уровня и зеркального уровня, направление вниз | 024 PASS|
 ### Требует footprint-данных (price-level clusters)
 | # | Детектор |
 |---|----------|
@@ -214,6 +216,14 @@ Synthetic / Vector / File. File — через ClusterCsvReader.
 - **Тест:** 13/13 ctest.
 - **ТЗ:** `specs/023_cascade_level.txt` v3.
 - **Правка по analyze:** validate() — добавлены проверки window_size.
+### cluster/StopHuntDetector [024 PASS]
+- **Формация:** импульсный прокол уровня + быстрый возврат.
+- **Алгоритм:** инкрементальный счёт касаний, поиск пробоя (пересечение close через уровень), возврат в окне max_pierce_bars. O(levels × n).
+- **Direction:** Sell при проколе вверх (стопы продавцов), Buy при проколе вниз (стопы покупателей).
+- **Файлы:** `include/cluster/StopHuntDetector.h`, `src/cluster/StopHuntDetector.cpp`.
+- **Тест:** 14/14 ctest.
+- **ТЗ:** `specs/024_stop_hunt.txt` v2.
+- **Правка по analyze:** устранена O(n³) деградация — инкрементальный счётчик. Window_size ограничен 20000.
 
 ---
 ## 16. Источники

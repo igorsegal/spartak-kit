@@ -24,6 +24,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/FalseBreakoutDetector.cpp
     src/cluster/VolumeProfileFilter.cpp
     src/cluster/CascadeLevelDetector.cpp
+    src/cluster/StopHuntDetector.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -82,3 +83,7 @@ add_test(NAME test_volume_profile COMMAND test_volume_profile)
 add_executable(test_cascade_level tests/test_cascade_level.cpp)
 target_link_libraries(test_cascade_level PRIVATE spartak_kit_core)
 add_test(NAME test_cascade_level COMMAND test_cascade_level)
+
+add_executable(test_stop_hunt tests/test_stop_hunt.cpp)
+target_link_libraries(test_stop_hunt PRIVATE spartak_kit_core)
+add_test(NAME test_stop_hunt COMMAND test_stop_hunt)
