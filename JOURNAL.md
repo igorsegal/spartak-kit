@@ -204,6 +204,12 @@ RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze н
 **Автор:** igorsegal + assistant
 ### Что сделано
 Инкрементальный счёт касаний. Sell при проколе вверх, Buy при проколе вниз. Тест 14/14. analyze: O(n^3) устранена, повторный OK. Остались детекторы 10-14 (требуют footprint).
+---
+## [039] 2026-10-09 - Crash-test XAUUSD_M5.bin: 1.5M баров, 5983 окна по 500
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+Результаты: Range 6.7%, VLevel 98%, Mirror 100%, FalseBreakout 100%, Divergence 10.8%, Cascade 0%, StopHunt 0%, Delta 0% (нет delta в .bin), VolumeProfile 0% (нет ask/bid). Загрузка 851 мс. Прогон 145 с. Найдены 3 перебора (Mirror, FalseBreakout, VLevel) и 2 недобора (Cascade, StopHunt). Утилита: tests/crash_test.cpp + src/data/XfbarReader.cpp.
 
 ---
 ## Как продолжить работу
