@@ -1,0 +1,98 @@
+ТЗ: CascadeLevelDetector (версия 3, финал)
+
+НАЗНАЧЕНИЕ
+Детектор каскадного уровня: два ценовых уровня по разные стороны цены, от каждого был отбой.
+Работает как усилитель CompositeSignal, не блокирует его.
+
+ИСТОЧНИК ПРАВИЛ
+Пункт 2: каскадный уровень - два уровня подряд, отбились дважды.
+R_L02: раз уровень, два уровень. Точка входа после второго отбоя.
+L08.2: каскад со снятием стопов продавцов.
+
+ОПРЕДЕЛЕНИЯ
+Уровень - high или low валидного бара. Доджи (high == low) НЕ даёт уровней.
+Касание - бар с low <= level + tol И high >= level - tol.
+Отбой от уровня - бар X после бара касания, где close ушёл от уровня в сторону, противоположную уровню, на расстояние >= min_rebound_pct * range. Расстояние: для уровня сверху - (level - close); для уровня снизу - (close - level).
+Отбой ищется в окне [last_touch_idx + 1, last_touch_idx + max_rebound_bars].
+Если отбой не найден в этом окне - уровень невалиден, исключается.
+
+ПОРЯДОК ШАГОВ
+1. Отфильтровать бары: NaN/Inf в ценах и объёмах, high < low, отрицательные объёмы, volume > 0 при ask+bid == 0.
+   Фильтрация в один проход. Индексы ниже - по отфильтрованному массиву.
+2. Проверить число валидных баров >= min_bars_for_cascade. Иначе ok false.
+3. Если валидных баров > window_size - обрезать массив до последних window_size.
+4. Найти min_low и max_high. range = max_high - min_low. Если range <= 0 - ok false.
+5. tol = range * zone_tolerance_range. Если tol <= 0 или tol > range - ok false.
+6. Собрать кандидаты-уровни: high и low валидных не-доджи баров.
+7. Уникализировать: если два уровня отличаются на <= tol - оставить первый.
+8. Для каждого уровня найти все касания.
+9. Уровень валиден если касаний >= min_touches_per_level.
+10. Для каждого валидного уровня найти первый отбой после последнего касания.
+11. Пары уровней (A, B): A != B, A и B по разные стороны от close последнего бара.
+    Между отбоем A и отбоем B не более max_gap_bars баров.
+12. Для каждой пары: score = touches_a + touches_b.
+13. Выбрать пару с максимальным score. При равенстве - минимальный индекс A, при равенстве - минимальный индекс B.
+14. Порядок A и B нормализован: A всегда уровень выше B (level_a > level_b).
+15. direction = Sell (отбой от верхнего, ждём падение).
+16. bars_between = rebound_b_idx - rebound_a_idx (неотрицательное после нормализации).
+
+ДОПУСК
+tol = range * zone_tolerance_range.
+
+ПАРАМЕТРЫ (требуют калибровки)
+zone_tolerance_range = 0.01
+min_bars_for_cascade = 20
+min_touches_per_level = 1
+max_gap_bars = 50
+max_rebound_bars = 10
+min_rebound_pct = 0.5
+window_size = 200
+
+ВЫХОД CascadeSignal
+ok bool
+direction OrderSide - всегда Sell при ok (нормализация A > B)
+level_a double - верхний уровень
+level_b double - нижний уровень
+level_a_ts int64 - время первого касания A
+level_b_ts int64 - время первого касания B
+rebound_a_ts int64 - время отбоя от A
+rebound_b_ts int64 - время отбоя от B
+touches_a int
+touches_b int
+bars_between int - между отбоями, неотрицательное
+
+При ok == false все числовые поля = 0, direction = Buy (значение по умолчанию).
+
+ВАЛИДАЦИЯ ПАРАМЕТРОВ
+zone_tolerance_range: (0, 1).
+min_bars_for_cascade >= 10.
+min_touches_per_level >= 1.
+max_gap_bars >= 1.
+max_rebound_bars >= 1.
+min_rebound_pct: (0, 1).
+window_size >= min_bars_for_cascade.
+Иначе ok false.
+
+КРАЕВЫЕ СЛУЧАИ
+Пустой вход - ok false.
+Валидных баров меньше min_bars_for_cascade - ok false.
+range <= 0 - ok false.
+tol <= 0 или tol > range - ok false.
+Меньше двух валидных уровней - ok false.
+Нет ни одной пары с отбоями - ok false.
+Все бары - доджи - ok false.
+Параметры не прошли валидацию - ok false.
+
+ЧЕГО ДЕТЕКТОР НЕ ДЕЛАЕТ
+Не ищет боковик.
+Не проверяет тренд.
+Не блокирует CompositeSignal.
+Работает как усилитель.
+
+СЛОЖНОСТЬ
+O(n * k), k - число уровней-кандидатов.
+
+ПРАВИЛА FOREX KIT
+Пункт 2: каскадный уровень.
+R_L02, L08.2.
+

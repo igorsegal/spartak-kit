@@ -192,6 +192,12 @@ RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze н
 **Автор:** igorsegal + assistant
 ### Что сделано
 Профиль BitAsk. 10-50 бинов, imbalance, POC, value area. Тест 18/18. analyze: OK. SPEC_REVIEW_PROMPT доработан: логика отделена от калибровки.
+---
+## [037] 2026-10-09 - CascadeLevelDetector PASS
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+Два уровня по разные стороны, отбой от каждого. Тест 13/13. analyze нашёл валидацию window_size, исправлено, повторный analyze чист. ARCHITECTURE.md обновлён.
 
 ---
 ## Как продолжить работу

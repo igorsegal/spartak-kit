@@ -68,6 +68,9 @@ plan | WIP | PASS | FAIL | ROLLBACK
 | include/cluster/VolumeProfileFilter.h | Фильтр профиля BitAsk | готов |
 | src/cluster/VolumeProfileFilter.cpp | Реализация VolumeProfileFilter | готов |
 | tests/test_volume_profile.cpp | Тест VolumeProfileFilter | готов |
+| include/cluster/CascadeLevelDetector.h | Детектор каскадного уровня | готов |
+| src/cluster/CascadeLevelDetector.cpp | Реализация CascadeLevelDetector | готов |
+| tests/test_cascade_level.cpp | Тест CascadeLevelDetector | готов |
 Статусы: готов, в работе, заглушка, мусор.
 ---
 ## 5. Поток данных
@@ -112,7 +115,7 @@ instrument, period, signal_type, direction, entry, exit, pnl, comment.
 | 5 | DivergenceDetector | Дивергенция RSI | 020 PASS|
 | 6 | FalseBreakoutDetector | Ложный пробой | 021 PASS|
 | 7 | VolumeProfileFilter | Профиль BitAsk: покупатели/продавцы, натягивать от начала боковика до пробития | 022 PASS|
-| 8 | CascadeLevelDetector | Каскадный уровень: два уровня подряд, два отбоя | 023 |
+| 8 | CascadeLevelDetector | Каскадный уровень: два уровня подряд, два отбоя | 023 PASS|
 | 9 | StopHuntDetector | Снятие стопов: требует уровня и зеркального уровня, направление вниз | 024 |
 ### Требует footprint-данных (price-level clusters)
 | # | Детектор |
@@ -203,6 +206,14 @@ Synthetic / Vector / File. File — через ClusterCsvReader.
 - **Тест:** 18/18 ctest.
 - **ТЗ:** `specs/022_volume_profile.txt` v5, 4 раунда spec через MCP.
 - **MCP-промпт:** `SPEC_REVIEW_PROMPT` разделён на Класс A (логика) и Класс B (калибровка). Параметры калибровки отделены.
+### cluster/CascadeLevelDetector [023 PASS]
+- **Формация:** два уровня по разные стороны цены, отбой от каждого.
+- **Алгоритм:** фильтрация, уникализация уровней по tol, поиск касаний, поиск отбоя в окне, пары по разные стороны от close, score по касаниям.
+- **Direction:** Sell при A > B (после нормализации).
+- **Файлы:** `include/cluster/CascadeLevelDetector.h`, `src/cluster/CascadeLevelDetector.cpp`.
+- **Тест:** 13/13 ctest.
+- **ТЗ:** `specs/023_cascade_level.txt` v3.
+- **Правка по analyze:** validate() — добавлены проверки window_size.
 
 ---
 ## 16. Источники

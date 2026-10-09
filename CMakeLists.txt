@@ -23,6 +23,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/DivergenceDetector.cpp
     src/cluster/FalseBreakoutDetector.cpp
     src/cluster/VolumeProfileFilter.cpp
+    src/cluster/CascadeLevelDetector.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -77,3 +78,7 @@ target_link_libraries(csv_stats PRIVATE spartak_kit_core)
 add_executable(test_volume_profile tests/test_volume_profile.cpp)
 target_link_libraries(test_volume_profile PRIVATE spartak_kit_core)
 add_test(NAME test_volume_profile COMMAND test_volume_profile)
+
+add_executable(test_cascade_level tests/test_cascade_level.cpp)
+target_link_libraries(test_cascade_level PRIVATE spartak_kit_core)
+add_test(NAME test_cascade_level COMMAND test_cascade_level)
