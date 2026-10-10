@@ -216,6 +216,12 @@ RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze н
 **Автор:** igorsegal + assistant
 ### Что сделано
 Правка XfbarReader: ask=bid=volume*0.5. Результат: Cascade 99.98%, StopHunt 100%, Mirror 100%, FalseBreakout 100%, VLevel 98% — перебор. Range 6.7%, Divergence 10.8% — норма. Delta и VolumeProfile 0% — нет данных. Требуется калибровка 5 детекторов.
+---
+## [041] 2026-10-10 - MirrorLevelDetector: зашёл в тупик
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+Оптимизатор показал: все 135 комбинаций параметров дают 96-100% сработок. Проблема не в параметрах, а в логике — требования к формации слишком слабые. Добавлены: pivot-фильтр кандидатов, проверка broken_inside. Не помогло. Отложено. Инструменты: tests/optimizer_mirror.cpp, tests/debug_mirror_why.cpp. VLevel откалиброван: min_strength 0.003 → 0.01 (98% → 27%). XfbarReader fix: ask=bid=volume*0.5 (иначе is_valid_bar резал все бары из .bin).
 
 ---
 ## Как продолжить работу

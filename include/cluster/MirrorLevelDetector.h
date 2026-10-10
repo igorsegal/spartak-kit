@@ -21,7 +21,7 @@ struct MirrorSignal {
 };
 
 struct MirrorOptions {
-    double zone_tolerance_range = 0.05;
+    double zone_tolerance_range = 0.01;
     int    min_touches          = 3;
     int    retest_window        = 20;
     int    min_hold_bars        = 5;

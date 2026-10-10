@@ -65,7 +65,7 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
     MirrorSignal best;
     int best_score = 0;
 
-    // Шаг 1: собираем кандидаты в уровни.
+    // Кандидаты-уровни: high и low каждого бара.
     struct LevelCand { double level; };
     std::vector<LevelCand> candidates;
 
@@ -91,7 +91,6 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
         }
     }
 
-    // Шаг 2: для каждого уровня ищем формацию.
     for (const auto& cand : candidates) {
         const double level = cand.level;
 
@@ -102,23 +101,38 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
             const bool break_down = bj.close < level - tol;
             if (!break_up && !break_down) continue;
 
+            // Считаем касания до пробоя и проверяем, что уровень держали:
+            // между первым касанием и пробоем цена НЕ закрывалась за уровень.
             int touches_before = 0;
             std::size_t first_touch = 0;
             std::size_t last_touch  = 0;
             bool first_set = false;
+            bool broken_inside = false;
+
             for (std::size_t k = search_begin; k < j; ++k) {
-                if (touches(bars[k], level, tol)) {
+                const auto& bk = bars[k];
+
+                if (first_set) {
+                    // Если после первого касания цена закрылась за уровнем в сторону пробоя — уровень не держал.
+                    if (break_up && bk.close > level + tol) { broken_inside = true; break; }
+                    if (break_down && bk.close < level - tol) { broken_inside = true; break; }
+                }
+
+                if (touches(bk, level, tol)) {
                     ++touches_before;
                     last_touch = k;
                     if (!first_set) { first_touch = k; first_set = true; }
                 }
             }
+
+            if (broken_inside) continue;
             if (touches_before < opts_.min_touches) continue;
 
             // Длительность удержания — от первого касания до пробоя.
             const std::size_t hold_bars = j - first_touch;
             if (hold_bars < static_cast<std::size_t>(opts_.min_hold_bars)) continue;
 
+            // Ретест.
             const std::size_t retest_end = std::min(
                 j + static_cast<std::size_t>(opts_.retest_window) + 1,
                 search_end);
@@ -159,7 +173,7 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
                 best.bars_since_break     = static_cast<int>(retest_idx - j);
             }
 
-            break;
+            break;  // Первый подходящий пробой для этого уровня.
         }
     }
 

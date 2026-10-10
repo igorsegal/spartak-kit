@@ -94,3 +94,12 @@ target_link_libraries(crash_test PRIVATE spartak_kit_core)
 
 add_executable(debug_cascade tests/debug_cascade.cpp)
 target_link_libraries(debug_cascade PRIVATE spartak_kit_core)
+
+add_executable(debug_vlevel tests/debug_vlevel.cpp)
+target_link_libraries(debug_vlevel PRIVATE spartak_kit_core)
+
+add_executable(debug_mirror_params tests/debug_mirror_params.cpp)
+target_link_libraries(debug_mirror_params PRIVATE spartak_kit_core)
+
+add_executable(optimizer_mirror tests/optimizer_mirror.cpp)
+target_link_libraries(optimizer_mirror PRIVATE spartak_kit_core)

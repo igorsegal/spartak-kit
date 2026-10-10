@@ -28,7 +28,7 @@ struct VLevelOptions {
     int    min_impulse_bars = 2;
     int    max_impulse_bars = 9;
     double one_way_ratio    = 0.7;
-    double min_strength     = 0.003;
+    double min_strength     = 0.01;
     double zone_tolerance   = 0.05;
     int    window_size      = 100;
 };
