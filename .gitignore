@@ -64,3 +64,4 @@ GAPS5.md
 ASK_*.md
 SCREENS_OCR.txt
 docs/glossary/tranzcrib/
+tests/data/*.bin
