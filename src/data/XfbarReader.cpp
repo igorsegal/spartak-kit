@@ -58,8 +58,8 @@ void raw_to_bar(const RawBar& rb, core::Bar& b) {
     b.low        = rb.low;
     b.close      = rb.close;
     b.volume     = static_cast<double>(rb.real_volume > 0 ? rb.real_volume : rb.tick_volume);
-    b.ask_volume = 0.0;
-    b.bid_volume = 0.0;
+    b.ask_volume = b.volume * 0.5;
+    b.bid_volume = b.volume * 0.5;
     b.delta      = 0.0;
 }
 

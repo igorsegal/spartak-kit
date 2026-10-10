@@ -91,3 +91,6 @@ add_test(NAME test_stop_hunt COMMAND test_stop_hunt)
 
 add_executable(crash_test tests/crash_test.cpp)
 target_link_libraries(crash_test PRIVATE spartak_kit_core)
+
+add_executable(debug_cascade tests/debug_cascade.cpp)
+target_link_libraries(debug_cascade PRIVATE spartak_kit_core)

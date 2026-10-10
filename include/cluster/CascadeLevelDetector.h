@@ -24,11 +24,11 @@ struct CascadeSignal {
 struct CascadeOptions {
     double zone_tolerance_range = 0.01;
     int    min_bars_for_cascade = 20;
-    int    min_touches_per_level = 1;
-    int    max_gap_bars         = 50;
-    int    max_rebound_bars     = 10;
-    double min_rebound_pct      = 0.5;
-    int    window_size          = 200;
+    int    min_touches_per_level = 2;
+    int    max_gap_bars         = 200;
+    int    max_rebound_bars     = 50;
+    double min_rebound_pct      = 0.1;
+    int    window_size          = 500;
 };
 
 class CascadeLevelDetector {

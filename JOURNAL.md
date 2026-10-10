@@ -210,6 +210,12 @@ RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze н
 **Автор:** igorsegal + assistant
 ### Что сделано
 Результаты: Range 6.7%, VLevel 98%, Mirror 100%, FalseBreakout 100%, Divergence 10.8%, Cascade 0%, StopHunt 0%, Delta 0% (нет delta в .bin), VolumeProfile 0% (нет ask/bid). Загрузка 851 мс. Прогон 145 с. Найдены 3 перебора (Mirror, FalseBreakout, VLevel) и 2 недобора (Cascade, StopHunt). Утилита: tests/crash_test.cpp + src/data/XfbarReader.cpp.
+---
+## [040] 2026-10-10 - Crash-test v2: фильтр is_valid_bar резал все бары из .bin
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+Правка XfbarReader: ask=bid=volume*0.5. Результат: Cascade 99.98%, StopHunt 100%, Mirror 100%, FalseBreakout 100%, VLevel 98% — перебор. Range 6.7%, Divergence 10.8% — норма. Delta и VolumeProfile 0% — нет данных. Требуется калибровка 5 детекторов.
 
 ---
 ## Как продолжить работу

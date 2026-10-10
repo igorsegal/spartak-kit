@@ -165,6 +165,7 @@ CascadeLevelDetector::find(const std::vector<core::Bar>& bars) const {
     if (infos.size() < 2) return r;
 
     const double last_close = valid.back().close;
+    const double near_threshold = 0.4 * range;
 
     struct Pair {
         std::size_t ia;
@@ -181,9 +182,9 @@ CascadeLevelDetector::find(const std::vector<core::Bar>& bars) const {
             const LevelInfo& li = infos[i];
             const LevelInfo& lj = infos[j];
 
-            const bool side_i = li.level > last_close;
-            const bool side_j = lj.level > last_close;
-            if (side_i == side_j) continue;
+            // Оба уровня недалеко от текущей цены.
+            if (std::fabs(li.level - last_close) > near_threshold) continue;
+            if (std::fabs(lj.level - last_close) > near_threshold) continue;
 
             const std::size_t ra = li.rebound_idx;
             const std::size_t rb = lj.rebound_idx;
