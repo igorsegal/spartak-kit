@@ -18,7 +18,7 @@ struct Result {
     double tol;
     int    min_touches;
     int    min_hold_bars;
-    int    retest_window;
+    int    max_bars_since_retest;
     long   ok;
     long   buy;
     long   sell;
@@ -56,19 +56,17 @@ void print_progress(std::size_t done, std::size_t total, long long ms_elapsed) {
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cout << "usage: optimizer_mirror <bin> [--sample N] [--full] [--window W]\n";
+        std::cout << "usage: optimizer_mirror <bin> [--sample N] [--window W]\n";
         return 1;
     }
 
     const std::string path = argv[1];
     std::size_t sample_size = 30;
-    std::size_t window = 500;
-    bool full = false;
+    std::size_t window = 200;
 
     for (int i = 2; i < argc; ++i) {
         const std::string a = argv[i];
-        if (a == "--full") full = true;
-        else if (a == "--sample" && i + 1 < argc) sample_size = std::stoul(argv[++i]);
+        if (a == "--sample" && i + 1 < argc) sample_size = std::stoul(argv[++i]);
         else if (a == "--window" && i + 1 < argc) window = std::stoul(argv[++i]);
     }
 
@@ -86,28 +84,22 @@ int main(int argc, char** argv) {
 
     std::vector<std::size_t> starts;
     const std::size_t max_start = bars.size() - window;
-    if (full) {
-        for (std::size_t s = 0; s <= max_start; s += window / 2) {
-            starts.push_back(s);
-        }
-    } else {
-        std::mt19937_64 rng(12345);
-        std::uniform_int_distribution<std::size_t> dist(0, max_start);
-        starts.reserve(sample_size);
-        for (std::size_t i = 0; i < sample_size; ++i) {
-            starts.push_back(dist(rng));
-        }
+    std::mt19937_64 rng(12345);
+    std::uniform_int_distribution<std::size_t> dist(0, max_start);
+    starts.reserve(sample_size);
+    for (std::size_t i = 0; i < sample_size; ++i) {
+        starts.push_back(dist(rng));
     }
 
     std::cout << "Windows: " << starts.size() << ", window size: " << window << "\n";
 
-    const std::vector<double> tol_grid     = {0.002, 0.005, 0.01, 0.02, 0.05};
-    const std::vector<int>    touches_grid = {3, 4, 5};
-    const std::vector<int>    hold_grid    = {5, 20, 50};
-    const std::vector<int>    retest_grid  = {5, 20, 50};
+    const std::vector<double> tol_grid       = {0.002, 0.01};
+    const std::vector<int>    touches_grid   = {3, 5};
+    const std::vector<int>    hold_grid      = {5, 30};
+    const std::vector<int>    freshness_grid = {20, 50, 100};
 
     const std::size_t total_combos =
-        tol_grid.size() * touches_grid.size() * hold_grid.size() * retest_grid.size();
+        tol_grid.size() * touches_grid.size() * hold_grid.size() * freshness_grid.size();
 
     std::cout << "Combos: " << total_combos << "\n";
     std::cout << "Total find() calls: " << total_combos * starts.size() << "\n\n";
@@ -121,17 +113,17 @@ int main(int argc, char** argv) {
     for (double tol : tol_grid) {
         for (int mt : touches_grid) {
             for (int mh : hold_grid) {
-                for (int rw : retest_grid) {
+                for (int mb : freshness_grid) {
                     cluster::MirrorOptions opts;
-                    opts.zone_tolerance_range = tol;
-                    opts.min_touches          = mt;
-                    opts.min_hold_bars        = mh;
-                    opts.retest_window        = rw;
-                    opts.window_size          = static_cast<int>(window);
+                    opts.zone_tolerance_range  = tol;
+                    opts.min_touches           = mt;
+                    opts.min_hold_bars         = mh;
+                    opts.max_bars_since_retest = mb;
+                    opts.window_size           = static_cast<int>(window);
 
                     cluster::MirrorLevelDetector d(opts);
 
-                    Result r{tol, mt, mh, rw, 0, 0, 0, 0};
+                    Result r{tol, mt, mh, mb, 0, 0, 0, 0};
                     for (std::size_t s : starts) {
                         std::vector<core::Bar> win(
                             bars.begin() + static_cast<long>(s),
@@ -154,7 +146,6 @@ int main(int argc, char** argv) {
             }
         }
     }
-
     std::cout << "\n";
 
     auto t1 = std::chrono::steady_clock::now();
@@ -167,12 +158,12 @@ int main(int argc, char** argv) {
 
     const std::string csv = "optimizer_mirror_results.csv";
     std::ofstream out(csv);
-    out << "tol,min_touches,min_hold_bars,retest_window,ok_pct,ok,buy,sell,calls\n";
+    out << "tol,min_touches,min_hold_bars,max_bars_since_retest,ok_pct,ok,buy,sell,calls\n";
     for (const auto& r : results) {
         out << r.tol << ","
             << r.min_touches << ","
             << r.min_hold_bars << ","
-            << r.retest_window << ","
+            << r.max_bars_since_retest << ","
             << ok_pct(r) << ","
             << r.ok << ","
             << r.buy << ","
@@ -181,34 +172,18 @@ int main(int argc, char** argv) {
     }
     out.close();
 
-    std::cout << "\n=== ТОП-20 СЕЛЕКТИВНЫХ (низкий % сработок) ===\n";
-    std::cout << "tol    mt  mh  rw   ok%      ok    buy   sell\n";
-    for (std::size_t i = 0; i < std::min<std::size_t>(20, results.size()); ++i) {
-        const auto& r = results[i];
+    std::cout << "\nВсего: " << total_ms << " мс. CSV: " << csv << "\n\n";
+    std::cout << "tol    mt  mh  mb   ok%      ok    buy   sell\n";
+    for (const auto& r : results) {
         std::cout << r.tol << "  "
                   << r.min_touches << "   "
                   << r.min_hold_bars << "   "
-                  << r.retest_window << "   "
+                  << r.max_bars_since_retest << "   "
                   << ok_pct(r) << "   "
                   << r.ok << "   "
                   << r.buy << "   "
                   << r.sell << "\n";
     }
 
-    std::cout << "\n=== ТОП-20 ПЕРЕБОРНЫХ (высокий % сработок) ===\n";
-    std::cout << "tol    mt  mh  rw   ok%      ok    buy   sell\n";
-    for (std::size_t i = 0; i < std::min<std::size_t>(20, results.size()); ++i) {
-        const auto& r = results[results.size() - 1 - i];
-        std::cout << r.tol << "  "
-                  << r.min_touches << "   "
-                  << r.min_hold_bars << "   "
-                  << r.retest_window << "   "
-                  << ok_pct(r) << "   "
-                  << r.ok << "   "
-                  << r.buy << "   "
-                  << r.sell << "\n";
-    }
-
-    std::cout << "\nВсего: " << total_ms << " мс. CSV: " << csv << "\n";
     return 0;
 }

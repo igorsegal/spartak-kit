@@ -11,6 +11,8 @@ bool MirrorLevelDetector::validate() const {
     if (opts_.min_touches < 2) return false;
     if (opts_.retest_window < 1) return false;
     if (opts_.min_hold_bars < 1) return false;
+    if (opts_.pivot_window < 1) return false;
+    if (opts_.max_bars_since_retest < 1) return false;
     if (opts_.window_size < opts_.min_touches + opts_.min_hold_bars + opts_.retest_window)
         return false;
     return true;
@@ -36,6 +38,30 @@ bool touches(const core::Bar& b, double level, double tol) {
     return b.low <= level + tol && b.high >= level - tol;
 }
 
+bool is_pivot_high(const std::vector<core::Bar>& bars, std::size_t center, int w) {
+    if (center < static_cast<std::size_t>(w)) return false;
+    if (center + static_cast<std::size_t>(w) >= bars.size()) return false;
+    const double h = bars[center].high;
+    for (int k = -w; k <= w; ++k) {
+        if (k == 0) continue;
+        const std::size_t idx = static_cast<std::size_t>(static_cast<int>(center) + k);
+        if (bars[idx].high >= h) return false;
+    }
+    return true;
+}
+
+bool is_pivot_low(const std::vector<core::Bar>& bars, std::size_t center, int w) {
+    if (center < static_cast<std::size_t>(w)) return false;
+    if (center + static_cast<std::size_t>(w) >= bars.size()) return false;
+    const double l = bars[center].low;
+    for (int k = -w; k <= w; ++k) {
+        if (k == 0) continue;
+        const std::size_t idx = static_cast<std::size_t>(static_cast<int>(center) + k);
+        if (bars[idx].low <= l) return false;
+    }
+    return true;
+}
+
 } // namespace
 
 MirrorSignal
@@ -51,7 +77,6 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
     if (search_end > n) search_end = n;
     if (search_begin >= search_end) return r;
 
-    // Диапазон цены на окне — база для абсолютного допуска.
     double min_low  = bars[search_begin].low;
     double max_high = bars[search_begin].high;
     for (std::size_t i = search_begin; i < search_end; ++i) {
@@ -65,29 +90,29 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
     MirrorSignal best;
     int best_score = 0;
 
-    // Кандидаты-уровни: high и low каждого бара.
     struct LevelCand { double level; };
     std::vector<LevelCand> candidates;
 
     for (std::size_t i = search_begin; i < search_end; ++i) {
-        const double values[2] = { bars[i].high, bars[i].low };
-        for (int k = 0; k < 2; ++k) {
-            const double lv = values[k];
-            if (lv <= 0.0) continue;
+        const bool ph = is_pivot_high(bars, i, opts_.pivot_window);
+        const bool pl = is_pivot_low(bars, i, opts_.pivot_window);
+        if (!ph && !pl) continue;
 
-            bool dup = false;
-            for (const auto& c : candidates) {
-                if (std::fabs(c.level - lv) <= tol) { dup = true; break; }
-            }
-            if (dup) continue;
+        const double lv = ph ? bars[i].high : bars[i].low;
+        if (lv <= 0.0) continue;
 
-            int cnt = 0;
-            for (std::size_t j = search_begin; j < search_end; ++j) {
-                if (touches(bars[j], lv, tol)) ++cnt;
-            }
-            if (cnt >= opts_.min_touches) {
-                candidates.push_back({ lv });
-            }
+        bool dup = false;
+        for (const auto& c : candidates) {
+            if (std::fabs(c.level - lv) <= tol) { dup = true; break; }
+        }
+        if (dup) continue;
+
+        int cnt = 0;
+        for (std::size_t j = search_begin; j < search_end; ++j) {
+            if (touches(bars[j], lv, tol)) ++cnt;
+        }
+        if (cnt >= opts_.min_touches) {
+            candidates.push_back({ lv });
         }
     }
 
@@ -101,8 +126,6 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
             const bool break_down = bj.close < level - tol;
             if (!break_up && !break_down) continue;
 
-            // Считаем касания до пробоя и проверяем, что уровень держали:
-            // между первым касанием и пробоем цена НЕ закрывалась за уровень.
             int touches_before = 0;
             std::size_t first_touch = 0;
             std::size_t last_touch  = 0;
@@ -113,7 +136,6 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
                 const auto& bk = bars[k];
 
                 if (first_set) {
-                    // Если после первого касания цена закрылась за уровнем в сторону пробоя — уровень не держал.
                     if (break_up && bk.close > level + tol) { broken_inside = true; break; }
                     if (break_down && bk.close < level - tol) { broken_inside = true; break; }
                 }
@@ -128,11 +150,9 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
             if (broken_inside) continue;
             if (touches_before < opts_.min_touches) continue;
 
-            // Длительность удержания — от первого касания до пробоя.
             const std::size_t hold_bars = j - first_touch;
             if (hold_bars < static_cast<std::size_t>(opts_.min_hold_bars)) continue;
 
-            // Ретест.
             const std::size_t retest_end = std::min(
                 j + static_cast<std::size_t>(opts_.retest_window) + 1,
                 search_end);
@@ -154,6 +174,11 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
 
             if (!retest_found) continue;
 
+            const std::size_t bars_after_retest = (search_end - 1) - retest_idx;
+            if (bars_after_retest > static_cast<std::size_t>(opts_.max_bars_since_retest)) {
+                continue;
+            }
+
             core::OrderSide dir = break_up ? core::OrderSide::Buy : core::OrderSide::Sell;
 
             int score = touches_before;
@@ -173,7 +198,7 @@ MirrorLevelDetector::find_impl(const std::vector<core::Bar>& bars,
                 best.bars_since_break     = static_cast<int>(retest_idx - j);
             }
 
-            break;  // Первый подходящий пробой для этого уровня.
+            break;
         }
     }
 

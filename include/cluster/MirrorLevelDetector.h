@@ -21,11 +21,13 @@ struct MirrorSignal {
 };
 
 struct MirrorOptions {
-    double zone_tolerance_range = 0.01;
-    int    min_touches          = 3;
-    int    retest_window        = 20;
-    int    min_hold_bars        = 5;
-    int    window_size          = 200;
+    double zone_tolerance_range  = 0.02;
+    int    min_touches           = 5;
+    int    retest_window         = 20;
+    int    min_hold_bars         = 30;
+    int    pivot_window          = 5;
+    int    max_bars_since_retest = 20;
+    int    window_size           = 200;
 };
 
 class MirrorLevelDetector {
