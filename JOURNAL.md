@@ -252,6 +252,12 @@ RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze н
 **Автор:** igorsegal + assistant
 ### Что сделано
 Добавлен pivot_window=10, max_bars_since_return=3, min_touches=8. Оптимизатор 32 комбинации × 100 окон. Лучшая точка: tol=0.001, pw=10 → 31%. Краштест: 23.2% (1388/5984). Buy/Sell 687/701 — симметрия.
+---
+## [048] 2026-10-11 - CompositeSignal PASS
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+Объединяет 7 детекторов с весами: Range/Mirror/Cascade=3, VLevel/Divergence/FalseBreakout/StopHunt=2. min_weight=5, min_factors=2, min_lead=2. Range не голосует (не даёт направления). Краштест: 6.0% (358/5984). Buy/Sell 176/182 — симметрия.
 
 ---
 ## Как продолжить работу

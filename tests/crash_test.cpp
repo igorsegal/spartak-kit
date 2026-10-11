@@ -9,6 +9,7 @@
 #include "cluster/VolumeProfileFilter.h"
 #include "cluster/CascadeLevelDetector.h"
 #include "cluster/StopHuntDetector.h"
+#include "cluster/CompositeSignal.h"
 #include <chrono>
 #include <cstdint>
 #include <iostream>
@@ -84,6 +85,7 @@ int main(int argc, char** argv) {
     cluster::VolumeProfileFilter  vprofile;
     cluster::CascadeLevelDetector cascade;
     cluster::StopHuntDetector     hunts;
+    cluster::CompositeSignal      comp;
 
     Stats st_range{"RangeDetector"};
     Stats st_vlevel{"VLevelDetector"};
@@ -94,6 +96,7 @@ int main(int argc, char** argv) {
     Stats st_vprofile{"VolumeProfileFilter"};
     Stats st_cascade{"CascadeLevelDetector"};
     Stats st_hunts{"StopHuntDetector"};
+    Stats st_comp{"CompositeSignal"};
 
     const std::size_t step = win / 2;
     const std::size_t total_windows = (bars.size() - win) / step;
@@ -185,6 +188,15 @@ int main(int argc, char** argv) {
                 else ++st_hunts.sell;
             }
         }
+        {
+            const auto r = comp.find(window);
+            ++st_comp.calls;
+            if (r.ok) {
+                ++st_comp.ok;
+                if (r.direction == core::OrderSide::Buy) ++st_comp.buy;
+                else ++st_comp.sell;
+            }
+        }
     }
 
     auto t3 = std::chrono::steady_clock::now();
@@ -200,6 +212,7 @@ int main(int argc, char** argv) {
     print_stats(st_vprofile);
     print_stats(st_cascade);
     print_stats(st_hunts);
+    print_stats(st_comp);
 
     std::cout << "\nВремя прогона: " << run_ms << " мс\n";
     return 0;

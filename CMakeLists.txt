@@ -25,6 +25,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/VolumeProfileFilter.cpp
     src/cluster/CascadeLevelDetector.cpp
     src/cluster/StopHuntDetector.cpp
+    src/cluster/CompositeSignal.cpp
     src/data/XfbarReader.cpp
 )
 
@@ -112,3 +113,7 @@ target_link_libraries(optimizer_cascade PRIVATE spartak_kit_core)
 
 add_executable(optimizer_stop_hunt tests/optimizer_stop_hunt.cpp)
 target_link_libraries(optimizer_stop_hunt PRIVATE spartak_kit_core)
+
+add_executable(test_composite_signal tests/test_composite_signal.cpp)
+target_link_libraries(test_composite_signal PRIVATE spartak_kit_core)
+add_test(NAME test_composite_signal COMMAND test_composite_signal)
