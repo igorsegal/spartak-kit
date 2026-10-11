@@ -234,6 +234,12 @@ RSI-14 по Уайлдеру, pivot ±5, окно 50. Тест 12/12. analyze н
 **Автор:** igorsegal + assistant
 ### Что сделано
 Сохранены: include/cluster/FalseBreakoutDetector.h, src/cluster/FalseBreakoutDetector.cpp (с max_bars_since_return), tests/optimizer_false_breakout.cpp, CMakeLists.txt. НЕ собрано, НЕ протестировано. При возврате: пересобрать, прогнать optimizer_false_breakout на XAUUSD_M5.bin.
+---
+## [044] 2026-10-11 - FalseBreakoutDetector PASS
+**Статус:** PASS
+**Автор:** igorsegal + assistant
+### Что сделано
+Оптимизатор 36 комбинаций. Лучшая точка: tol=0.001, mt=8, bb=10, mbr=5 → 23%. Краштест: 26.2% (1570/5984). Buy/Sell 791/779 — симметрия. Параметр max_bars_since_return — ключевой (свежесть). Инструменты: tests/optimizer_false_breakout.cpp.
 
 ---
 ## Как продолжить работу

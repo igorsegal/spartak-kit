@@ -11,6 +11,7 @@ bool FalseBreakoutDetector::validate() const {
     if (opts_.min_touches < 2) return false;
     if (opts_.breakout_min_bars < 1) return false;
     if (opts_.return_window < 1) return false;
+    if (opts_.max_bars_since_return < 1) return false;
     if (opts_.window_size < opts_.min_bars_for_tol) return false;
     if (opts_.min_bars_for_tol < 10) return false;
     return true;
@@ -81,18 +82,7 @@ FalseBreakoutDetector::find(const std::vector<core::Bar>& bars) const {
     for (const auto& cand : candidates) {
         const double level = cand.level;
 
-        // 1. Собираем индексы касаний.
-        std::vector<std::size_t> touch_idx;
-        for (std::size_t k = begin; k < end; ++k) {
-            if (touches(bars[k], level, tol)) touch_idx.push_back(k);
-        }
-        if (touch_idx.size() < static_cast<std::size_t>(opts_.min_touches)) continue;
-
-        // 2. Момент, когда уровень сформирован (накоплено min_touches касаний).
-        const std::size_t level_formed = touch_idx[opts_.min_touches - 1];
-
-        // 3. Ищем пробой ПОСЛЕ формирования уровня. Пробой = переход close через уровень.
-        for (std::size_t j = level_formed + 1; j < end; ++j) {
+        for (std::size_t j = begin + 1; j < end; ++j) {
             if (!std::isfinite(bars[j].close)) continue;
             const double prev_close = bars[j - 1].close;
             const double curr_close = bars[j].close;
@@ -104,7 +94,6 @@ FalseBreakoutDetector::find(const std::vector<core::Bar>& bars) const {
             const int breakout_dir = break_up ? +1 : -1;
             const std::size_t breakout_idx = j;
 
-            // Касания до пробоя.
             int touches_before = 0;
             std::size_t first_touch = 0;
             bool first_set = false;
@@ -116,7 +105,6 @@ FalseBreakoutDetector::find(const std::vector<core::Bar>& bars) const {
             }
             if (touches_before < opts_.min_touches) continue;
 
-            // Закрепление: breakout_min_bars следующих баров close за уровнем.
             const int need = opts_.breakout_min_bars;
             std::size_t retest_idx = breakout_idx;
             bool confirmed = true;
@@ -133,7 +121,6 @@ FalseBreakoutDetector::find(const std::vector<core::Bar>& bars) const {
             }
             if (!confirmed) continue;
 
-            // Возврат.
             const std::size_t ret_end = std::min(
                 retest_idx + static_cast<std::size_t>(opts_.return_window) + 1,
                 end);
@@ -154,6 +141,9 @@ FalseBreakoutDetector::find(const std::vector<core::Bar>& bars) const {
                 }
             }
             if (!return_found) continue;
+
+            const std::size_t bars_after = (end - 1) - return_idx;
+            if (bars_after > static_cast<std::size_t>(opts_.max_bars_since_return)) continue;
 
             double extreme = (breakout_dir > 0) ? bars[breakout_idx].high : bars[breakout_idx].low;
             for (std::size_t k = breakout_idx + 1; k <= retest_idx; ++k) {
@@ -188,7 +178,7 @@ FalseBreakoutDetector::find(const std::vector<core::Bar>& bars) const {
                 best.against_trend    = against;
             }
 
-            break; // Для этого уровня сигнал найден.
+            break;
         }
     }
 

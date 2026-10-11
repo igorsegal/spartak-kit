@@ -23,12 +23,13 @@ struct FalseBreakoutSignal {
 };
 
 struct FalseBreakoutOptions {
-    double zone_tolerance_range = 0.01;
-    int    min_touches          = 3;
-    int    breakout_min_bars    = 2;
-    int    return_window        = 5;
-    int    window_size          = 200;
-    int    min_bars_for_tol     = 40;
+    double zone_tolerance_range    = 0.001;
+    int    min_touches             = 8;
+    int    breakout_min_bars       = 10;
+    int    return_window           = 5;
+    int    max_bars_since_return   = 5;
+    int    window_size             = 200;
+    int    min_bars_for_tol        = 40;
 };
 
 class FalseBreakoutDetector {
