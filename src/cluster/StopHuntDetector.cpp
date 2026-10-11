@@ -11,6 +11,8 @@ bool StopHuntDetector::validate() const {
     if (opts_.min_bars_for_hunt < 10) return false;
     if (opts_.min_touches < 1) return false;
     if (opts_.max_pierce_bars < 1 || opts_.max_pierce_bars > 10) return false;
+    if (opts_.max_bars_since_return < 1) return false;
+    if (opts_.pivot_window < 1) return false;
     if (opts_.window_size < opts_.min_bars_for_hunt) return false;
     if (opts_.window_size < 1) return false;
     if (opts_.window_size > 20000) return false;
@@ -42,6 +44,30 @@ bool is_valid_bar(const core::Bar& b) {
 
 bool touches(const core::Bar& b, double level, double tol) {
     return b.low <= level + tol && b.high >= level - tol;
+}
+
+bool is_pivot_high(const std::vector<core::Bar>& bars, std::size_t center, int w) {
+    if (center < static_cast<std::size_t>(w)) return false;
+    if (center + static_cast<std::size_t>(w) >= bars.size()) return false;
+    const double h = bars[center].high;
+    for (int k = -w; k <= w; ++k) {
+        if (k == 0) continue;
+        const std::size_t idx = static_cast<std::size_t>(static_cast<int>(center) + k);
+        if (bars[idx].high >= h) return false;
+    }
+    return true;
+}
+
+bool is_pivot_low(const std::vector<core::Bar>& bars, std::size_t center, int w) {
+    if (center < static_cast<std::size_t>(w)) return false;
+    if (center + static_cast<std::size_t>(w) >= bars.size()) return false;
+    const double l = bars[center].low;
+    for (int k = -w; k <= w; ++k) {
+        if (k == 0) continue;
+        const std::size_t idx = static_cast<std::size_t>(static_cast<int>(center) + k);
+        if (bars[idx].low <= l) return false;
+    }
+    return true;
 }
 
 } // namespace
@@ -79,16 +105,16 @@ StopHuntDetector::find(const std::vector<core::Bar>& bars) const {
     const double tol = range * opts_.zone_tolerance_range;
     if (tol <= 0.0 || tol >= range) return r;
 
-    std::vector<double> cands;
-    for (const auto& b : valid) {
-        if (b.high == b.low) continue;
-        cands.push_back(b.high);
-        cands.push_back(b.low);
-    }
-
+    // Кандидаты-уровни: только pivot high/low.
     std::vector<double> levels;
-    for (double lv : cands) {
+    for (std::size_t i = 0; i < n; ++i) {
+        const bool ph = is_pivot_high(valid, i, opts_.pivot_window);
+        const bool pl = is_pivot_low(valid, i, opts_.pivot_window);
+        if (!ph && !pl) continue;
+
+        const double lv = ph ? valid[i].high : valid[i].low;
         if (!std::isfinite(lv) || lv <= 0.0) continue;
+
         bool dup = false;
         for (double existing : levels) {
             if (std::fabs(existing - lv) <= tol) { dup = true; break; }
@@ -107,23 +133,21 @@ StopHuntDetector::find(const std::vector<core::Bar>& bars) const {
     };
 
     std::vector<Hunt> found;
+    const std::size_t last_bar_idx = n - 1;
 
     for (double lv : levels) {
-        // Инкрементальный счётчик касаний. Один проход по барам.
         int touches_so_far = 0;
         std::size_t first_touch = 0;
         std::size_t last_touch = 0;
         bool any_touch = false;
 
         for (std::size_t j = 1; j < n; ++j) {
-            // Обновляем счётчик касаний для бара j-1.
             if (touches(valid[j - 1], lv, tol)) {
                 ++touches_so_far;
                 if (!any_touch) { first_touch = j - 1; any_touch = true; }
                 last_touch = j - 1;
             }
 
-            // Проверяем пробой на баре j.
             const double prev_close = valid[j - 1].close;
             const double curr_close = valid[j].close;
 
@@ -134,7 +158,6 @@ StopHuntDetector::find(const std::vector<core::Bar>& bars) const {
 
             if (touches_so_far < opts_.min_touches) continue;
 
-            // Возврат.
             const std::size_t return_end = std::min(
                 j + 1 + static_cast<std::size_t>(opts_.max_pierce_bars),
                 n);
@@ -148,6 +171,11 @@ StopHuntDetector::find(const std::vector<core::Bar>& bars) const {
             }
             if (!returned) continue;
 
+            const std::size_t bars_since_return = last_bar_idx - return_idx;
+            if (bars_since_return > static_cast<std::size_t>(opts_.max_bars_since_return)) {
+                continue;
+            }
+
             Hunt h;
             h.level = lv;
             h.pierce_idx = j;
@@ -157,7 +185,7 @@ StopHuntDetector::find(const std::vector<core::Bar>& bars) const {
             h.last_touch_idx = last_touch;
             h.touches_before = touches_so_far;
             found.push_back(h);
-            break;  // Первый подходящий пробой для уровня.
+            break;
         }
     }
 

@@ -8,25 +8,27 @@
 namespace spartak::cluster {
 
 struct StopHuntSignal {
-    bool            ok             = false;
-    core::OrderSide direction      = core::OrderSide::Buy;
-    double          level          = 0.0;
-    std::int64_t    level_ts       = 0;
-    std::int64_t    touch_ts       = 0;
-    std::int64_t    pierce_ts      = 0;
-    std::int64_t    return_ts      = 0;
-    double          pierce_extreme = 0.0;
+    bool            ok              = false;
+    core::OrderSide direction       = core::OrderSide::Buy;
+    double          level           = 0.0;
+    std::int64_t    level_ts        = 0;
+    std::int64_t    touch_ts        = 0;
+    std::int64_t    pierce_ts       = 0;
+    std::int64_t    return_ts       = 0;
+    double          pierce_extreme  = 0.0;
     double          close_at_return = 0.0;
-    int             touches_before = 0;
-    int             bars_outside   = 0;
+    int             touches_before  = 0;
+    int             bars_outside    = 0;
 };
 
 struct StopHuntOptions {
-    double zone_tolerance_range = 0.01;
-    int    min_bars_for_hunt    = 20;
-    int    min_touches          = 2;
-    int    max_pierce_bars      = 3;
-    int    window_size          = 200;
+    double zone_tolerance_range    = 0.001;
+    int    min_bars_for_hunt       = 20;
+    int    min_touches             = 8;
+    int    max_pierce_bars         = 2;
+    int    max_bars_since_return   = 3;
+    int    pivot_window            = 10;
+    int    window_size             = 200;
 };
 
 class StopHuntDetector {
