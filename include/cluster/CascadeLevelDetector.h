@@ -8,27 +8,29 @@
 namespace spartak::cluster {
 
 struct CascadeSignal {
-    bool            ok            = false;
-    core::OrderSide direction     = core::OrderSide::Buy;
-    double          level_a       = 0.0;
-    double          level_b       = 0.0;
-    std::int64_t    level_a_ts    = 0;
-    std::int64_t    level_b_ts    = 0;
-    std::int64_t    rebound_a_ts  = 0;
-    std::int64_t    rebound_b_ts  = 0;
-    int             touches_a     = 0;
-    int             touches_b     = 0;
-    int             bars_between  = 0;
+    bool            ok             = false;
+    core::OrderSide direction      = core::OrderSide::Buy;
+    double          level_a        = 0.0;
+    double          level_b        = 0.0;
+    std::int64_t    level_a_ts     = 0;
+    std::int64_t    level_b_ts     = 0;
+    std::int64_t    rebound_a_ts   = 0;
+    std::int64_t    rebound_b_ts   = 0;
+    int             touches_a      = 0;
+    int             touches_b      = 0;
+    int             bars_between   = 0;
 };
 
 struct CascadeOptions {
-    double zone_tolerance_range = 0.01;
-    int    min_bars_for_cascade = 20;
-    int    min_touches_per_level = 2;
-    int    max_gap_bars         = 200;
-    int    max_rebound_bars     = 50;
-    double min_rebound_pct      = 0.1;
-    int    window_size          = 500;
+    double zone_tolerance_range   = 0.005;
+    int    min_bars_for_cascade   = 20;
+    int    min_touches_per_level  = 3;
+    int    max_gap_bars           = 200;
+    int    max_rebound_bars       = 50;
+    int    max_bars_since_rebound = 10;
+    double min_rebound_pct        = 0.2;
+    double min_level_gap_pct      = 0.7;
+    int    window_size            = 500;
 };
 
 class CascadeLevelDetector {

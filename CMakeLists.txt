@@ -106,3 +106,6 @@ target_link_libraries(optimizer_mirror PRIVATE spartak_kit_core)
 
 add_executable(optimizer_false_breakout tests/optimizer_false_breakout.cpp)
 target_link_libraries(optimizer_false_breakout PRIVATE spartak_kit_core)
+
+add_executable(optimizer_cascade tests/optimizer_cascade.cpp)
+target_link_libraries(optimizer_cascade PRIVATE spartak_kit_core)

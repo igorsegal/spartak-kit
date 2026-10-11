@@ -12,7 +12,9 @@ bool CascadeLevelDetector::validate() const {
     if (opts_.min_touches_per_level < 1) return false;
     if (opts_.max_gap_bars < 1) return false;
     if (opts_.max_rebound_bars < 1) return false;
+    if (opts_.max_bars_since_rebound < 1) return false;
     if (opts_.min_rebound_pct <= 0.0 || opts_.min_rebound_pct >= 1.0) return false;
+    if (opts_.min_level_gap_pct <= 0.0 || opts_.min_level_gap_pct >= 1.0) return false;
     if (opts_.window_size < opts_.min_bars_for_cascade) return false;
     if (opts_.window_size < 1) return false;
     if (opts_.window_size > 100000) return false;
@@ -164,8 +166,7 @@ CascadeLevelDetector::find(const std::vector<core::Bar>& bars) const {
 
     if (infos.size() < 2) return r;
 
-    const double last_close = valid.back().close;
-    const double near_threshold = 0.4 * range;
+    const std::size_t last_bar_idx = n - 1;
 
     struct Pair {
         std::size_t ia;
@@ -182,14 +183,19 @@ CascadeLevelDetector::find(const std::vector<core::Bar>& bars) const {
             const LevelInfo& li = infos[i];
             const LevelInfo& lj = infos[j];
 
-            // Оба уровня недалеко от текущей цены.
-            if (std::fabs(li.level - last_close) > near_threshold) continue;
-            if (std::fabs(lj.level - last_close) > near_threshold) continue;
-
             const std::size_t ra = li.rebound_idx;
             const std::size_t rb = lj.rebound_idx;
             const std::size_t gap = (ra > rb) ? (ra - rb) : (rb - ra);
             if (gap > static_cast<std::size_t>(opts_.max_gap_bars)) continue;
+
+            // Свежесть: последний отбой должен быть недавно.
+            const std::size_t last_rebound = std::max(ra, rb);
+            const std::size_t bars_since = last_bar_idx - last_rebound;
+            if (bars_since > static_cast<std::size_t>(opts_.max_bars_since_rebound)) continue;
+
+            // Уровни должны быть значимо разнесены.
+            const double level_gap = std::fabs(li.level - lj.level);
+            if (level_gap < opts_.min_level_gap_pct * range) continue;
 
             const int score = static_cast<int>(li.touches.size() + lj.touches.size());
 
@@ -215,8 +221,12 @@ CascadeLevelDetector::find(const std::vector<core::Bar>& bars) const {
     const LevelInfo& a = infos[best.ia];
     const LevelInfo& b = infos[best.ib];
 
+    const core::OrderSide dir = (a.rebound_idx > b.rebound_idx)
+        ? core::OrderSide::Sell
+        : core::OrderSide::Buy;
+
     r.ok           = true;
-    r.direction    = core::OrderSide::Sell;
+    r.direction    = dir;
     r.level_a      = a.level;
     r.level_b      = b.level;
     r.level_a_ts   = valid[a.touches.front()].timestamp;
