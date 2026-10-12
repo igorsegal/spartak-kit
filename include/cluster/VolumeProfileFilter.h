@@ -23,7 +23,7 @@ struct VolumeProfileSignal {
 struct VolumeProfileOptions {
     double value_area_pct       = 0.70;
     int    min_bars_for_profile = 20;
-    double neutral_threshold    = 0.05;
+    double neutral_threshold    = 0.03;
 };
 
 class VolumeProfileFilter {

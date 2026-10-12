@@ -16,6 +16,7 @@ add_library(spartak_kit_core STATIC
     src/data/BarStream.cpp
     src/data/DataSanitizer.cpp
     src/data/ClusterCsvReader.cpp
+    src/data/CbinReader.cpp
     src/cluster/RangeDetector.cpp
     src/cluster/VLevelDetector.cpp
     src/cluster/MirrorLevelDetector.cpp
@@ -27,6 +28,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/StopHuntDetector.cpp
     src/cluster/CompositeSignal.cpp
     src/data/XfbarReader.cpp
+    src/data/CbinWriter.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -117,3 +119,12 @@ target_link_libraries(optimizer_stop_hunt PRIVATE spartak_kit_core)
 add_executable(test_composite_signal tests/test_composite_signal.cpp)
 target_link_libraries(test_composite_signal PRIVATE spartak_kit_core)
 add_test(NAME test_composite_signal COMMAND test_composite_signal)
+
+add_executable(csv_to_cbin tools/csv_to_cbin.cpp)
+target_link_libraries(csv_to_cbin PRIVATE spartak_kit_core)
+
+add_executable(test_cbin_read tests/test_cbin_read.cpp)
+target_link_libraries(test_cbin_read PRIVATE spartak_kit_core)
+
+add_executable(test_delta_volume_6e tests/test_delta_volume_6e.cpp)
+target_link_libraries(test_delta_volume_6e PRIVATE spartak_kit_core)

@@ -1,5 +1,6 @@
 // crash_test.cpp
 #include "data/XfbarReader.h"
+#include "data/CbinReader.h"
 #include "cluster/RangeDetector.h"
 #include "cluster/VLevelDetector.h"
 #include "cluster/MirrorLevelDetector.h"
@@ -10,6 +11,7 @@
 #include "cluster/CascadeLevelDetector.h"
 #include "cluster/StopHuntDetector.h"
 #include "cluster/CompositeSignal.h"
+#include <algorithm>
 #include <chrono>
 #include <cstdint>
 #include <iostream>
@@ -36,11 +38,16 @@ void print_stats(const Stats& s) {
               << "\n";
 }
 
+bool ends_with(const std::string& s, const std::string& suffix) {
+    if (s.size() < suffix.size()) return false;
+    return s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cout << "usage: crash_test <path-to-bin> [window_size]\n";
+        std::cout << "usage: crash_test <path-to-file> [window_size]\n";
         return 1;
     }
     const std::string path = argv[1];
@@ -48,27 +55,48 @@ int main(int argc, char** argv) {
         ? static_cast<std::size_t>(std::stoi(argv[2]))
         : 500;
 
-    data::XfbarHeader h;
     std::vector<core::Bar> bars;
+    std::string format_name;
+
     std::cout << "Loading " << path << " ...\n";
     auto t0 = std::chrono::steady_clock::now();
-    if (!data::XfbarReader::load(path, bars, &h)) {
-        std::cout << "FAIL: не удалось загрузить файл\n";
+
+    if (ends_with(path, ".cbin")) {
+        format_name = "CBIN";
+        data::CbinInfo info;
+        if (!data::CbinReader::load(path, bars, &info)) {
+            std::cout << "FAIL: не удалось загрузить CBIN\n";
+            return 1;
+        }
+        std::cout << "Format: CBIN\n";
+        std::cout << "  period_seconds=" << info.period_seconds
+                  << " digits=" << info.digits
+                  << " point=" << info.point << "\n";
+        std::cout << "  bar_count=" << info.bar_count
+                  << " first_ts=" << info.first_time
+                  << " last_ts=" << info.last_time << "\n";
+    } else if (ends_with(path, ".bin")) {
+        format_name = "XFBAR";
+        data::XfbarHeader h;
+        if (!data::XfbarReader::load(path, bars, &h)) {
+            std::cout << "FAIL: не удалось загрузить XFBAR\n";
+            return 1;
+        }
+        std::cout << "Format: XFBAR\n";
+        std::cout << "  symbol=" << h.symbol
+                  << " period_seconds=" << h.period_seconds
+                  << " digits=" << h.digits
+                  << " point=" << h.point << "\n";
+        std::cout << "  bars=" << h.bar_count
+                  << " first_ts=" << h.first_time
+                  << " last_ts=" << h.last_time << "\n";
+    } else {
+        std::cout << "FAIL: неизвестное расширение. Ожидается .bin или .cbin\n";
         return 1;
     }
+
     auto t1 = std::chrono::steady_clock::now();
     const auto load_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-
-    std::cout << "Header:\n";
-    std::cout << "  magic=" << h.magic << " version=" << h.version
-              << " record_size=" << h.record_size << "\n";
-    std::cout << "  symbol=" << h.symbol
-              << " period_seconds=" << h.period_seconds
-              << " digits=" << h.digits
-              << " point=" << h.point << "\n";
-    std::cout << "  bars=" << h.bar_count
-              << " first_ts=" << h.first_time
-              << " last_ts=" << h.last_time << "\n";
     std::cout << "Loaded " << bars.size() << " bars за " << load_ms << " мс\n\n";
 
     if (bars.size() < win + 1) {
@@ -202,7 +230,7 @@ int main(int argc, char** argv) {
     auto t3 = std::chrono::steady_clock::now();
     const auto run_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2).count();
 
-    std::cout << "\n=== СТАТИСТИКА ===\n";
+    std::cout << "\n=== СТАТИСТИКА (" << format_name << ") ===\n";
     print_stats(st_range);
     print_stats(st_vlevel);
     print_stats(st_mirror);
