@@ -29,6 +29,7 @@ add_library(spartak_kit_core STATIC
     src/cluster/CompositeSignal.cpp
     src/data/XfbarReader.cpp
     src/data/CbinWriter.cpp
+    src/engine/BacktestPlayer.cpp
 )
 
 target_include_directories(spartak_kit_core PUBLIC
@@ -128,3 +129,6 @@ target_link_libraries(test_cbin_read PRIVATE spartak_kit_core)
 
 add_executable(test_delta_volume_6e tests/test_delta_volume_6e.cpp)
 target_link_libraries(test_delta_volume_6e PRIVATE spartak_kit_core)
+
+add_executable(test_backtest_6e tests/test_backtest_6e.cpp)
+target_link_libraries(test_backtest_6e PRIVATE spartak_kit_core)
